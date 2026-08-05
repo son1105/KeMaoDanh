@@ -26,6 +26,7 @@
   body{
     margin:0;
     min-height:100vh;
+    min-height:100dvh;
     background:
       radial-gradient(ellipse 900px 500px at 50% -10%, rgba(201,153,47,0.09), transparent 60%),
       repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 3px),
@@ -33,9 +34,9 @@
     color:var(--paper);
     font-family:'IBM Plex Mono', monospace;
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:center;
-    padding:18px;
+    padding:24px 18px;
     -webkit-tap-highlight-color: transparent;
     overflow-x:hidden;
   }
@@ -122,6 +123,17 @@
     text-align:center;
   }
   .stepper .stepper-label{ font-size:13px; color:var(--paper-dim); }
+
+  .stepper-row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    margin-bottom:16px;
+  }
+  .stepper-row .field-label{ margin-bottom:8px; }
+  .stepper-compact{ margin-bottom:0; padding:8px 10px; }
+  .stepper-compact button{ width:30px; height:30px; font-size:16px; }
+  .stepper-compact .value{ font-size:20px; min-width:24px; }
 
   .btn{
     display:block; width:100%;
@@ -541,18 +553,23 @@
         <button id="plus-players">+</button>
       </div>
 
-      <span class="field-label">Số kẻ mạo danh</span>
-      <div class="stepper">
-        <button id="minus-spies">−</button>
-        <div><span class="value" id="spies-count">1</span> <span class="stepper-label">điệp viên</span></div>
-        <button id="plus-spies">+</button>
-      </div>
-
-      <span class="field-label">Số Mr. White</span>
-      <div class="stepper">
-        <button id="minus-whites">−</button>
-        <div><span class="value" id="whites-count">0</span> <span class="stepper-label">người</span></div>
-        <button id="plus-whites">+</button>
+      <div class="stepper-row">
+        <div>
+          <span class="field-label">Kẻ mạo danh</span>
+          <div class="stepper stepper-compact">
+            <button id="minus-spies">−</button>
+            <div><span class="value" id="spies-count">1</span></div>
+            <button id="plus-spies">+</button>
+          </div>
+        </div>
+        <div>
+          <span class="field-label">Mr. White</span>
+          <div class="stepper stepper-compact">
+            <button id="minus-whites">−</button>
+            <div><span class="value" id="whites-count">0</span></div>
+            <button id="plus-whites">+</button>
+          </div>
+        </div>
       </div>
 
       <span class="field-label">Thời gian hỏi cung</span>
