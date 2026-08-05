@@ -17,6 +17,7 @@
     --red-bright:#c9342a;
     --amber:#c9992f;
     --amber-dim:#8a6c2a;
+    --ghost:#8fb3c7;
     --line: rgba(236,227,204,0.14);
     --shadow: 0 20px 50px rgba(0,0,0,0.55);
   }
@@ -345,32 +346,9 @@
   .reveal-item .who{ color:var(--paper); }
   .reveal-item .what{ color:var(--paper-dim); }
   .reveal-item.is-spy .what{ color:var(--red-bright); }
+  .reveal-item.is-mrwhite .what{ color:var(--ghost); }
 
   footer{ text-align:center; margin-top:16px; font-size:10.5px; color:var(--amber-dim); letter-spacing:0.15em; text-transform:uppercase; }
-
-  .mode-toggle{
-    display:flex;
-    border:1px solid var(--line);
-    border-radius:3px;
-    overflow:hidden;
-  }
-  .mode-btn{
-    flex:1;
-    padding:11px 8px;
-    background:var(--charcoal);
-    color:var(--paper-dim);
-    border:none;
-    font-family:'Oswald', sans-serif;
-    font-size:13px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    cursor:pointer;
-  }
-  .mode-btn + .mode-btn{ border-left:1px solid var(--line); }
-  .mode-btn.active{
-    background:var(--red);
-    color:var(--paper);
-  }
 
   .toggle-row{
     display:flex; align-items:center; gap:12px;
@@ -456,6 +434,7 @@
   }
   @keyframes spinDot{ to{ transform:rotate(360deg); } }
   .vote-card.done.is-spy{ border-color:var(--red-bright); }
+  .vote-card.done.is-mrwhite{ border-color:var(--ghost); }
   .vote-card .row{
     display:flex; align-items:center; justify-content:space-between;
     padding:13px 14px;
@@ -474,6 +453,7 @@
   }
   .vote-card.done .status{ color:var(--amber-dim); }
   .vote-card.done.is-spy .status{ color:var(--red-bright); }
+  .vote-card.done.is-mrwhite .status{ color:var(--ghost); }
   .vote-card .flip{
     max-height:0;
     overflow:hidden;
@@ -502,6 +482,7 @@
     color:var(--paper-dim);
   }
   .vote-card.is-spy .flip-role{ color:var(--red-bright); }
+  .vote-card.is-mrwhite .flip-role{ color:var(--ghost); }
   .vote-card .flip-eyebrow{
     font-size:10px; letter-spacing:0.25em; text-transform:uppercase; color:var(--amber-dim); margin-bottom:4px;
   }
@@ -519,20 +500,15 @@
   <!-- SETUP -->
   <div class="screen active" id="screen-setup">
     <div class="card">
-      <span class="field-label">Chế độ chơi</span>
-      <div class="mode-toggle">
-        <button class="mode-btn active" data-mode="classic" id="mode-classic">Cổ Điển</button>
-        <button class="mode-btn" data-mode="keyword" id="mode-keyword">Có Từ Khóa</button>
-      </div>
-      <div class="hint" id="mode-desc" style="margin-top:10px; border-top:none; padding-top:0;">
-        Mọi người biết cùng một địa điểm, riêng kẻ mạo danh biết mình không biết gì — họ phải giả vờ.
+      <div class="hint" style="margin-top:0; border-top:none; padding-top:0;">
+        Dân thường và Kẻ Mạo Danh đều nhận một từ khóa gần giống nhau — riêng <b>Mr. White</b> không nhận từ khóa nào cả và phải bịa hoàn toàn để không bị lộ.
       </div>
 
-      <div id="spy-hint-row" class="toggle-row">
-        <button class="toggle-switch" id="spy-hint-toggle" aria-pressed="false"><span class="toggle-knob"></span></button>
+      <div id="mrwhite-hint-row" class="toggle-row" style="margin-top:14px;">
+        <button class="toggle-switch" id="mrwhite-hint-toggle" aria-pressed="false"><span class="toggle-knob"></span></button>
         <div>
-          <div class="toggle-title">Gợi ý cho kẻ mạo danh</div>
-          <div class="toggle-caption" id="spy-hint-caption">Tắt — kẻ mạo danh không biết gì cả</div>
+          <div class="toggle-title">Gợi ý cho Mr. White</div>
+          <div class="toggle-caption" id="mrwhite-hint-caption">Tắt — Mr. White hoàn toàn không biết gì</div>
         </div>
       </div>
 
@@ -548,6 +524,13 @@
         <button id="minus-spies">−</button>
         <div><span class="value" id="spies-count">1</span> <span class="stepper-label">điệp viên</span></div>
         <button id="plus-spies">+</button>
+      </div>
+
+      <span class="field-label">Số Mr. White</span>
+      <div class="stepper">
+        <button id="minus-whites">−</button>
+        <div><span class="value" id="whites-count">0</span> <span class="stepper-label">người</span></div>
+        <button id="plus-whites">+</button>
       </div>
 
       <span class="field-label">Thời gian hỏi cung</span>
@@ -566,7 +549,7 @@
         <button class="btn" id="start-btn">Bắt Đầu Chia Hồ Sơ</button>
       </div>
       <div class="hint">
-        Mỗi người sẽ lần lượt xem hồ sơ của mình trên cùng một máy. Mọi người chơi biết cùng một <b>địa điểm</b>, riêng kẻ mạo danh thì không — nhiệm vụ của họ là giả vờ và tìm ra địa điểm trước khi bị lộ.
+        Mỗi người sẽ lần lượt xem hồ sơ của mình trên cùng một máy. Có thể đặt số Kẻ Mạo Danh = 0 — khi đó Mr. White sẽ là người duy nhất không biết từ khóa thật, đóng vai "kẻ lạc loài" của ván chơi.
       </div>
     </div>
   </div>
@@ -604,7 +587,7 @@
     <div class="card timer-wrap">
       <div class="timer-sub">Phiên hỏi cung đang diễn ra</div>
       <div class="timer-face" id="timer-face">08:00</div>
-      <div class="timer-sub" id="timer-status">Hỏi nhau về địa điểm — đừng để lộ nếu bạn là kẻ mạo danh</div>
+      <div class="timer-sub" id="timer-status">Mô tả từ khóa của bạn — đừng nói ra trực tiếp!</div>
 
       <div class="timer-controls">
         <button class="btn secondary small" id="pause-btn">Tạm Dừng</button>
@@ -612,7 +595,7 @@
       </div>
 
       <details style="margin-top:20px;" id="loc-details">
-        <summary>Danh sách địa điểm có thể có (<span id="loc-total">20</span>)</summary>
+        <summary>Danh sách từ khóa chính có thể có (<span id="loc-total">20</span>)</summary>
         <div class="loc-grid" id="loc-grid"></div>
       </details>
 
@@ -654,992 +637,509 @@
 (function(){
   "use strict";
 
-  const LOCATIONS = [
-    "Máy Bay","Ngân Hàng","Bãi Biển","Rạp Chiếu Phim","Sòng Bạc","Nhà Thờ",
-    "Đại Sứ Quán","Bệnh Viện","Khách Sạn","Trường Học","Nhà Hàng","Tàu Ngầm",
-    "Siêu Thị","Nhà Hát","Sở Thú","Công Viên Giải Trí","Đồn Cảnh Sát",
-    "Nhà Ga Xe Lửa","Đại Học","Quán Bar"
-  ];
-
-  const LOCATION_HINTS = {
-    "Máy Bay": "Phương tiện di chuyển trên không",
-    "Ngân Hàng": "Nơi liên quan đến tiền bạc",
-    "Bãi Biển": "Địa điểm nghỉ dưỡng ngoài trời",
-    "Rạp Chiếu Phim": "Nơi giải trí, xem trình diễn",
-    "Sòng Bạc": "Nơi có hoạt động cờ bạc",
-    "Nhà Thờ": "Nơi thờ phượng, tôn giáo",
-    "Đại Sứ Quán": "Nơi liên quan đến ngoại giao",
-    "Bệnh Viện": "Nơi chăm sóc sức khỏe",
-    "Khách Sạn": "Nơi lưu trú qua đêm",
-    "Trường Học": "Nơi giáo dục, học tập",
-    "Nhà Hàng": "Nơi phục vụ ăn uống",
-    "Tàu Ngầm": "Phương tiện di chuyển dưới nước",
-    "Siêu Thị": "Nơi mua sắm nhu yếu phẩm",
-    "Nhà Hát": "Nơi biểu diễn nghệ thuật",
-    "Sở Thú": "Nơi trưng bày động vật",
-    "Công Viên Giải Trí": "Nơi vui chơi giải trí ngoài trời",
-    "Đồn Cảnh Sát": "Nơi liên quan đến pháp luật",
-    "Nhà Ga Xe Lửa": "Nơi di chuyển bằng đường sắt",
-    "Đại Học": "Nơi giáo dục bậc cao",
-    "Quán Bar": "Nơi giải trí về đêm, có đồ uống"
-  };
-
   const WORD_PAIRS = [
-    // đồ ăn & đồ uống
-{ main:"Cà Phê", decoy:"Trà Sữa" },
-{ main:"Cà Phê Đen", decoy:"Cà Phê Sữa" },
-{ main:"Espresso", decoy:"Americano" },
-{ main:"Latte", decoy:"Cappuccino" },
-{ main:"Mocha", decoy:"Chocolate Nóng" },
-{ main:"Trà Đào", decoy:"Trà Vải" },
-{ main:"Trà Chanh", decoy:"Trà Tắc" },
-{ main:"Trà Sen", decoy:"Trà Lài" },
-{ main:"Nước Cam", decoy:"Nước Chanh" },
-{ main:"Nước Ép Táo", decoy:"Nước Ép Lê" },
-{ main:"Sinh Tố Xoài", decoy:"Sinh Tố Bơ" },
-{ main:"Sinh Tố Dâu", decoy:"Sinh Tố Việt Quất" },
-{ main:"Sữa Chua", decoy:"Kem" },
-{ main:"Kem Vani", decoy:"Kem Socola" },
-{ main:"Kem Dâu", decoy:"Kem Matcha" },
-{ main:"Bánh Mì", decoy:"Bánh Bao" },
-{ main:"Hamburger", decoy:"Hotdog" },
-{ main:"Pizza", decoy:"Mì Ý" },
-{ main:"Phở", decoy:"Bún Bò" },
-{ main:"Hủ Tiếu", decoy:"Mì Quảng" },
-{ main:"Bún Riêu", decoy:"Bún Mắm" },
-{ main:"Bún Chả", decoy:"Bún Thịt Nướng" },
-{ main:"Cơm Tấm", decoy:"Cơm Gà" },
-{ main:"Cơm Chiên", decoy:"Cơm Rang Hải Sản" },
-{ main:"Cơm Cuộn", decoy:"Sushi" },
-{ main:"Sushi", decoy:"Sashimi" },
-{ main:"Lẩu Thái", decoy:"Lẩu Hải Sản" },
-{ main:"Lẩu Bò", decoy:"Lẩu Gà" },
-{ main:"Bánh Xèo", decoy:"Bánh Khọt" },
-{ main:"Bánh Cuốn", decoy:"Bánh Ướt" },
-{ main:"Bánh Canh", decoy:"Mì Udon" },
-{ main:"Mì Cay", decoy:"Mì Trộn" },
-{ main:"Mì Gói", decoy:"Mì Ly" },
-{ main:"Cháo Gà", decoy:"Cháo Vịt" },
-{ main:"Cháo Lòng", decoy:"Cháo Thịt Bằm" },
-{ main:"Gà Rán", decoy:"Gà Nướng" },
-{ main:"Gà Luộc", decoy:"Gà Hấp" },
-{ main:"Vịt Quay", decoy:"Heo Quay" },
-{ main:"Bò Bít Tết", decoy:"Sườn Nướng" },
-{ main:"Thịt Kho", decoy:"Cá Kho" },
-{ main:"Cá Hồi", decoy:"Cá Ngừ" },
-{ main:"Tôm", decoy:"Cua" },
-{ main:"Mực", decoy:"Bạch Tuộc" },
-{ main:"Ngao", decoy:"Sò" },
-{ main:"Hàu", decoy:"Vẹm" },
-{ main:"Ốc Hương", decoy:"Ốc Mỡ" },
-{ main:"Bánh Flan", decoy:"Pudding" },
-{ main:"Bánh Kem", decoy:"Cupcake" },
-{ main:"Bánh Donut", decoy:"Bagel" },
-{ main:"Croissant", decoy:"Puff Pastry" },
-{ main:"Bánh Quy", decoy:"Bánh Gạo" },
-{ main:"Socola Đen", decoy:"Socola Sữa" },
-{ main:"Kẹo Dẻo", decoy:"Marshmallow" },
-{ main:"Bắp Rang", decoy:"Khoai Tây Chiên" },
-{ main:"Khoai Tây Chiên", decoy:"Khoai Lang Chiên" },
-{ main:"Xúc Xích", decoy:"Lạp Xưởng" },
-{ main:"Trứng Luộc", decoy:"Trứng Chiên" },
-{ main:"Trứng Ốp La", decoy:"Trứng Cuộn" },
-{ main:"Bơ", decoy:"Phô Mai" },
-{ main:"Phô Mai Mozzarella", decoy:"Phô Mai Cheddar" },
-{ main:"Sữa Tươi", decoy:"Sữa Đặc" },
-{ main:"Sữa Đậu Nành", decoy:"Sữa Hạnh Nhân" },
-{ main:"Mật Ong", decoy:"Siro" },
-{ main:"Đường Trắng", decoy:"Đường Nâu" },
-{ main:"Muối", decoy:"Đường" },
-{ main:"Tiêu", decoy:"Ớt Bột" },
-{ main:"Tương Ớt", decoy:"Tương Cà" },
-{ main:"Nước Mắm", decoy:"Nước Tương" },
-{ main:"Mayonnaise", decoy:"Mù Tạt" },
-{ main:"Dầu Ăn", decoy:"Dầu Oliu" },
-{ main:"Giấm", decoy:"Rượu Gạo" },
-{ main:"Bánh Chưng", decoy:"Bánh Tét" },
-{ main:"Bánh Ít", decoy:"Bánh Giò" },
-{ main:"Bánh Giầy", decoy:"Bánh Dày Đậu" },
-{ main:"Bánh Trung Thu", decoy:"Bánh Pía" },
-{ main:"Xôi Gấc", decoy:"Xôi Đậu" },
-{ main:"Xôi Mặn", decoy:"Xôi Gà" },
-{ main:"Chè Đậu Đỏ", decoy:"Chè Đậu Xanh" },
-{ main:"Chè Thái", decoy:"Chè Khúc Bạch" },
-{ main:"Yaourt", decoy:"Sữa Chua Uống" },
-{ main:"Bún Cá", decoy:"Bún Mọc" },
-{ main:"Nem Rán", decoy:"Chả Giò" },
-{ main:"Gỏi Cuốn", decoy:"Bò Bía" },
-{ main:"Bò Kho", decoy:"Cari Bò" },
-{ main:"Cari Gà", decoy:"Gà Kho Gừng" },
-{ main:"Bánh Bèo", decoy:"Bánh Nậm" },
-{ main:"Bánh Lọc", decoy:"Bánh Ít Trần" },
-{ main:"Bánh Tằm", decoy:"Bánh Canh" },
-{ main:"Cá Viên", decoy:"Bò Viên" },
-{ main:"Mì Xào", decoy:"Hủ Tiếu Xào" },
-{ main:"Bò Lúc Lắc", decoy:"Bò Xào Rau" },
-{ main:"Canh Chua", decoy:"Canh Rau" },
-{ main:"Canh Bí", decoy:"Canh Mướp" },
-{ main:"Rau Muống", decoy:"Rau Lang" },
-{ main:"Cải Xanh", decoy:"Cải Thìa" },
-{ main:"Bí Đỏ", decoy:"Bí Xanh" },
-{ main:"Cà Rốt", decoy:"Củ Cải" },
-{ main:"Khoai Tây", decoy:"Khoai Lang" },
-{ main:"Táo", decoy:"Lê" },
-{ main:"Cam", decoy:"Quýt" },
-{ main:"Bưởi", decoy:"Cam Sành" },
-{ main:"Xoài", decoy:"Đu Đủ" },
-{ main:"Dưa Hấu", decoy:"Dưa Lưới" },
-
-{ main:"Nho", decoy:"Cherry" },
-{ main:"Dâu Tây", decoy:"Mâm Xôi" },
-{ main:"Việt Quất", decoy:"Nam Việt Quất" },
-{ main:"Chuối", decoy:"Mít" },
-{ main:"Sầu Riêng", decoy:"Mít" },
-{ main:"Chôm Chôm", decoy:"Vải Thiều" },
-{ main:"Nhãn", decoy:"Vải" },
-{ main:"Măng Cụt", decoy:"Mận" },
-{ main:"Thanh Long", decoy:"Kiwi" },
-{ main:"Ổi", decoy:"Lê" },
-
-{ main:"Đào", decoy:"Mơ" },
-{ main:"Mận", decoy:"Đào" },
-{ main:"Dừa", decoy:"Thốt Nốt" },
-{ main:"Me", decoy:"Sấu" },
-{ main:"Quýt", decoy:"Cam" },
-{ main:"Chanh Dây", decoy:"Cam" },
-{ main:"Bơ", decoy:"Sầu Riêng" },
-{ main:"Lựu", decoy:"Táo" },
-{ main:"Sung", decoy:"Ổi" },
-{ main:"Hồng", decoy:"Lê" },
-
-{ main:"Bắp", decoy:"Ngô Nếp" },
-{ main:"Đậu Phộng", decoy:"Hạt Điều" },
-{ main:"Hạt Dẻ", decoy:"Hạnh Nhân" },
-{ main:"Óc Chó", decoy:"Macca" },
-{ main:"Pistachio", decoy:"Hạnh Nhân" },
-{ main:"Hạt Sen", decoy:"Đậu Xanh" },
-{ main:"Đậu Đỏ", decoy:"Đậu Đen" },
-{ main:"Đậu Trắng", decoy:"Đậu Hà Lan" },
-{ main:"Đậu Nành", decoy:"Đậu Xanh" },
-{ main:"Mè Trắng", decoy:"Mè Đen" },
-
-{ main:"Rau Cải", decoy:"Xà Lách" },
-{ main:"Xà Lách", decoy:"Rau Diếp" },
-{ main:"Cải Bó Xôi", decoy:"Cải Thìa" },
-{ main:"Rau Dền", decoy:"Rau Muống" },
-{ main:"Rau Ngót", decoy:"Mồng Tơi" },
-{ main:"Mồng Tơi", decoy:"Rau Đay" },
-{ main:"Bắp Cải", decoy:"Súp Lơ" },
-{ main:"Súp Lơ Xanh", decoy:"Súp Lơ Trắng" },
-{ main:"Cần Tây", decoy:"Hành Tây" },
-{ main:"Củ Dền", decoy:"Cà Rốt" },
-
-{ main:"Cà Chua", decoy:"Ớt Chuông" },
-{ main:"Ớt Chuông", decoy:"Cà Chua" },
-{ main:"Dưa Leo", decoy:"Bí Ngòi" },
-{ main:"Khổ Qua", decoy:"Dưa Leo" },
-{ main:"Hành Lá", decoy:"Hẹ" },
-{ main:"Tỏi", decoy:"Hành Tím" },
-{ main:"Gừng", decoy:"Riềng" },
-{ main:"Nghệ", decoy:"Gừng" },
-{ main:"Sả", decoy:"Lá Chanh" },
-{ main:"Lá Chanh", decoy:"Lá Dứa" },
-
-{ main:"Bò Khô", decoy:"Heo Khô" },
-{ main:"Khô Mực", decoy:"Khô Cá" },
-{ main:"Cá Cơm", decoy:"Cá Trích" },
-{ main:"Cá Basa", decoy:"Cá Tra" },
-{ main:"Cá Lóc", decoy:"Cá Rô" },
-{ main:"Cá Diêu Hồng", decoy:"Cá Chép" },
-{ main:"Cá Thu", decoy:"Cá Ngừ" },
-{ main:"Tôm Sú", decoy:"Tôm Thẻ" },
-{ main:"Cua Biển", decoy:"Ghẹ" },
-{ main:"Ghẹ", decoy:"Cua" },
-
-{ main:"Mực Lá", decoy:"Mực Ống" },
-{ main:"Bạch Tuộc", decoy:"Mực" },
-{ main:"Sò Huyết", decoy:"Nghêu" },
-{ main:"Sò Điệp", decoy:"Hàu" },
-{ main:"Ốc Len", decoy:"Ốc Hương" },
-{ main:"Ốc Móng Tay", decoy:"Ốc Giác" },
-{ main:"Rong Biển", decoy:"Tảo Bẹ" },
-{ main:"Kim Chi", decoy:"Củ Cải Muối" },
-{ main:"Củ Cải Muối", decoy:"Dưa Chua" },
-{ main:"Dưa Muối", decoy:"Kim Chi" },
-
-{ main:"Bánh Tráng", decoy:"Bánh Đa" },
-{ main:"Bánh Tráng Nướng", decoy:"Pizza" },
-{ main:"Bánh Tráng Trộn", decoy:"Gỏi Khô Bò" },
-{ main:"Bắp Xào", decoy:"Bắp Luộc" },
-{ main:"Khoai Nướng", decoy:"Khoai Luộc" },
-{ main:"Khoai Môn", decoy:"Khoai Lang" },
-{ main:"Chuối Chiên", decoy:"Khoai Chiên" },
-{ main:"Bánh Chuối", decoy:"Bánh Khoai" },
-{ main:"Bắp Nướng", decoy:"Bắp Luộc" },
-{ main:"Đậu Hũ", decoy:"Chả Cá" },
-
-{ main:"Đậu Hũ Non", decoy:"Tàu Hũ" },
-{ main:"Tàu Hũ", decoy:"Pudding" },
-{ main:"Sữa Đậu", decoy:"Sữa Gạo" },
-{ main:"Matcha", decoy:"Trà Xanh" },
-{ main:"Ca Cao", decoy:"Socola" },
-{ main:"Chocolate", decoy:"Ca Cao" },
-{ main:"Mật Mía", decoy:"Mật Ong" },
-{ main:"Nước Dừa", decoy:"Nước Mía" },
-{ main:"Nước Mía", decoy:"Nước Dừa" },
-{ main:"Cocktail", decoy:"Mocktail" },
-
-{ main:"Rượu Vang", decoy:"Champagne" },
-{ main:"Bia", decoy:"Cider" },
-{ main:"Whisky", decoy:"Brandy" },
-{ main:"Vodka", decoy:"Gin" },
-{ main:"Rum", decoy:"Tequila" },
-{ main:"Tequila", decoy:"Vodka" },
-{ main:"Gin", decoy:"Vodka" },
-{ main:"Champagne", decoy:"Rượu Vang" },
-{ main:"Cider", decoy:"Bia" },
-{ main:"Mocktail", decoy:"Cocktail" },
-
-// động vật
-{ main:"Chó", decoy:"Mèo" },
-{ main:"Sư Tử", decoy:"Hổ" },
-{ main:"Báo Đốm", decoy:"Báo Gấm" },
-{ main:"Báo Đen", decoy:"Báo Hoa Mai" },
-{ main:"Sói", decoy:"Cáo" },
-{ main:"Linh Cẩu", decoy:"Sói" },
-{ main:"Chó Sói", decoy:"Chó Husky" },
-{ main:"Husky", decoy:"Alaska" },
-{ main:"Golden Retriever", decoy:"Labrador" },
-{ main:"Poodle", decoy:"Bichon" },
-
-{ main:"Chihuahua", decoy:"Phốc Sóc" },
-{ main:"Corgi", decoy:"Shiba Inu" },
-{ main:"Akita", decoy:"Shiba Inu" },
-{ main:"Doberman", decoy:"Rottweiler" },
-{ main:"Becgie", decoy:"Malinois" },
-{ main:"Bulldog", decoy:"Pug" },
-{ main:"Mèo Anh Lông Ngắn", decoy:"Mèo Anh Lông Dài" },
-{ main:"Mèo Ba Tư", decoy:"Mèo Ragdoll" },
-{ main:"Mèo Xiêm", decoy:"Mèo Bengal" },
-{ main:"Mèo Không Lông", decoy:"Mèo Devon Rex" },
-
-{ main:"Ngựa", decoy:"Lừa" },
-{ main:"Ngựa Vằn", decoy:"Lừa Vằn" },
-{ main:"Bò", decoy:"Trâu" },
-{ main:"Bê", decoy:"Nghé" },
-{ main:"Dê", decoy:"Cừu" },
-{ main:"Cừu", decoy:"Lạc Đà Không Bướu" },
-{ main:"Lạc Đà", decoy:"Lạc Đà Không Bướu" },
-{ main:"Llama", decoy:"Alpaca" },
-{ main:"Hươu", decoy:"Nai" },
-{ main:"Linh Dương", decoy:"Sơn Dương" },
-
-{ main:"Voi", decoy:"Tê Giác" },
-{ main:"Hà Mã", decoy:"Tê Giác" },
-{ main:"Tê Giác", decoy:"Hà Mã" },
-{ main:"Lợn Rừng", decoy:"Heo Nhà" },
-{ main:"Heo", decoy:"Lợn Rừng" },
-{ main:"Thỏ", decoy:"Chuột Lang" },
-{ main:"Hamster", decoy:"Chuột Lang" },
-{ main:"Sóc", decoy:"Chồn" },
-{ main:"Chuột Túi", decoy:"Wallaby" },
-{ main:"Koala", decoy:"Gấu Túi" },
-
-{ main:"Gấu Nâu", decoy:"Gấu Đen" },
-{ main:"Gấu Bắc Cực", decoy:"Gấu Nâu" },
-{ main:"Gấu Trúc", decoy:"Gấu Trúc Đỏ" },
-{ main:"Gấu Trúc Đỏ", decoy:"Gấu Trúc" },
-{ main:"Khỉ", decoy:"Đười Ươi" },
-{ main:"Tinh Tinh", decoy:"Khỉ Đột" },
-{ main:"Khỉ Đột", decoy:"Tinh Tinh" },
-{ main:"Đười Ươi", decoy:"Vượn" },
-{ main:"Vượn", decoy:"Khỉ" },
-{ main:"Lười", decoy:"Koala" },
-
-{ main:"Đại Bàng", decoy:"Diều Hâu" },
-{ main:"Ó", decoy:"Cú Mèo" },
-{ main:"Cú Mèo", decoy:"Cú Tuyết" },
-{ main:"Chim Cắt", decoy:"Diều Hâu" },
-{ main:"Kền Kền", decoy:"Đại Bàng" },
-{ main:"Chim Sẻ", decoy:"Chim Sơn Ca" },
-{ main:"Chim Sáo", decoy:"Chim Yến" },
-{ main:"Chim Yến", decoy:"Chim Én" },
-{ main:"Chim Én", decoy:"Chim Yến" },
-{ main:"Bồ Câu", decoy:"Cu Gáy" },
-
-{ main:"Công", decoy:"Trĩ" },
-{ main:"Gà Tây", decoy:"Gà Ta" },
-{ main:"Gà Rừng", decoy:"Gà Tre" },
-{ main:"Vịt", decoy:"Ngan" },
-{ main:"Ngỗng", decoy:"Thiên Nga" },
-{ main:"Thiên Nga", decoy:"Ngỗng" },
-{ main:"Hồng Hạc", decoy:"Sếu" },
-{ main:"Sếu", decoy:"Cò" },
-{ main:"Cò", decoy:"Diệc" },
-{ main:"Diệc", decoy:"Cò" },
-
-{ main:"Vẹt", decoy:"Yến Phụng" },
-{ main:"Vẹt Macaw", decoy:"Vẹt Cockatoo" },
-{ main:"Chim Gõ Kiến", decoy:"Chim Toucan" },
-{ main:"Chim Cánh Cụt", decoy:"Hải Cẩu" },
-{ main:"Đà Điểu", decoy:"Đà Điểu Emu" },
-{ main:"Emu", decoy:"Đà Điểu" },
-{ main:"Kiwi", decoy:"Emu" },
-{ main:"Quạ", decoy:"Chim Rook" },
-{ main:"Chào Mào", decoy:"Khướu" },
-{ main:"Họa Mi", decoy:"Sơn Ca" },
-
-{ main:"Cá Voi", decoy:"Cá Heo" },
-{ main:"Cá Heo", decoy:"Cá Nhà Táng" },
-{ main:"Cá Nhà Táng", decoy:"Cá Voi Xanh" },
-{ main:"Cá Mập Trắng", decoy:"Cá Mập Hổ" },
-{ main:"Cá Mập Búa", decoy:"Cá Mập Trắng" },
-{ main:"Cá Đuối", decoy:"Cá Sam" },
-{ main:"Cá Ngừ", decoy:"Cá Thu" },
-{ main:"Cá Hồi", decoy:"Cá Tầm" },
-{ main:"Cá Chép", decoy:"Cá Trắm" },
-{ main:"Cá Rô", decoy:"Cá Lóc" },
-
-{ main:"Cá Basa", decoy:"Cá Tra" },
-{ main:"Cá Trê", decoy:"Cá Nheo" },
-{ main:"Cá Diêu Hồng", decoy:"Cá Rô Phi" },
-{ main:"Cá Betta", decoy:"Cá Bảy Màu" },
-{ main:"Cá Vàng", decoy:"Cá Koi" },
-{ main:"Cá Koi", decoy:"Cá Chép" },
-{ main:"Lươn", decoy:"Cá Chình" },
-{ main:"Cá Chình", decoy:"Lươn" },
-{ main:"Sứa", decoy:"Hải Quỳ" },
-{ main:"Sao Biển", decoy:"Cầu Gai" },
-// ĐỘNG VẬT (301 - 400)
-
-{ main:"Rùa", decoy:"Ba Ba" },
-{ main:"Rùa Biển", decoy:"Đồi Mồi" },
-{ main:"Đồi Mồi", decoy:"Rùa Biển" },
-{ main:"Ba Ba", decoy:"Rùa Mai Mềm" },
-{ main:"Cá Sấu", decoy:"Cá Sấu Mõm Dài" },
-{ main:"Cá Sấu Xiêm", decoy:"Cá Sấu Nước Mặn" },
-{ main:"Cá Sấu Nước Mặn", decoy:"Cá Sấu Mỹ" },
-{ main:"Kỳ Đà", decoy:"Rồng Komodo" },
-{ main:"Rồng Komodo", decoy:"Kỳ Đà" },
-{ main:"Tắc Kè", decoy:"Thằn Lằn" },
-
-{ main:"Thằn Lằn", decoy:"Tắc Kè" },
-{ main:"Tắc Kè Hoa", decoy:"Thằn Lằn Xanh" },
-{ main:"Cự Đà", decoy:"Kỳ Đà" },
-{ main:"Rắn Hổ Mang", decoy:"Rắn Cạp Nong" },
-{ main:"Rắn Hổ Chúa", decoy:"Rắn Hổ Mang" },
-{ main:"Rắn Lục", decoy:"Rắn Roi" },
-{ main:"Rắn Roi", decoy:"Rắn Lục" },
-{ main:"Rắn Cạp Nong", decoy:"Rắn Cạp Nia" },
-{ main:"Rắn Cạp Nia", decoy:"Rắn Cạp Nong" },
-{ main:"Trăn", decoy:"Trăn Gấm" },
-
-{ main:"Trăn Gấm", decoy:"Trăn Miến Điện" },
-{ main:"Trăn Miến Điện", decoy:"Trăn Gấm" },
-{ main:"Ếch", decoy:"Nhái" },
-{ main:"Cóc", decoy:"Ếch" },
-{ main:"Kỳ Nhông", decoy:"Sa Giông" },
-{ main:"Sa Giông", decoy:"Kỳ Nhông" },
-{ main:"Cóc Tía", decoy:"Cóc Nhà" },
-{ main:"Ếch Cây", decoy:"Ếch Đồng" },
-{ main:"Ếch Đồng", decoy:"Nhái Bén" },
-{ main:"Nhái Bén", decoy:"Ếch Đồng" },
-
-{ main:"Bướm", decoy:"Ngài" },
-{ main:"Ngài", decoy:"Bướm" },
-{ main:"Ong Mật", decoy:"Ong Bắp Cày" },
-{ main:"Ong Vò Vẽ", decoy:"Ong Bắp Cày" },
-{ main:"Ong Bắp Cày", decoy:"Ong Vò Vẽ" },
-{ main:"Kiến", decoy:"Mối" },
-{ main:"Mối", decoy:"Kiến" },
-{ main:"Kiến Lửa", decoy:"Kiến Đen" },
-{ main:"Kiến Cánh", decoy:"Mối Cánh" },
-{ main:"Mối Cánh", decoy:"Kiến Cánh" },
-
-{ main:"Chuồn Chuồn", decoy:"Chuồn Kim" },
-{ main:"Chuồn Kim", decoy:"Chuồn Chuồn" },
-{ main:"Ve Sầu", decoy:"Dế" },
-{ main:"Dế", decoy:"Cào Cào" },
-{ main:"Cào Cào", decoy:"Châu Chấu" },
-{ main:"Châu Chấu", decoy:"Cào Cào" },
-{ main:"Bọ Ngựa", decoy:"Bọ Que" },
-{ main:"Bọ Que", decoy:"Bọ Ngựa" },
-{ main:"Bọ Cánh Cứng", decoy:"Bọ Hung" },
-{ main:"Bọ Hung", decoy:"Bọ Cánh Cứng" },
-
-{ main:"Bọ Rùa", decoy:"Bọ Xít" },
-{ main:"Bọ Xít", decoy:"Bọ Rùa" },
-{ main:"Ruồi", decoy:"Muỗi" },
-{ main:"Muỗi", decoy:"Ruồi" },
-{ main:"Muỗi Vằn", decoy:"Muỗi Culex" },
-{ main:"Ruồi Giấm", decoy:"Ruồi Nhà" },
-{ main:"Ruồi Nhà", decoy:"Ruồi Giấm" },
-{ main:"Gián", decoy:"Dế" },
-{ main:"Nhện", decoy:"Bọ Cạp" },
-{ main:"Bọ Cạp", decoy:"Nhện" },
-
-{ main:"Rết", decoy:"Cuốn Chiếu" },
-{ main:"Cuốn Chiếu", decoy:"Rết" },
-{ main:"Giun Đất", decoy:"Đỉa" },
-{ main:"Đỉa", decoy:"Giun Đất" },
-{ main:"Sán", decoy:"Giun" },
-{ main:"Ốc Sên", decoy:"Sên Trần" },
-{ main:"Sên Trần", decoy:"Ốc Sên" },
-{ main:"Cầu Gai", decoy:"Sao Biển" },
-{ main:"Hải Sâm", decoy:"Sao Biển" },
-{ main:"Hải Quỳ", decoy:"San Hô" },
-
-{ main:"San Hô", decoy:"Hải Quỳ" },
-{ main:"Bạch Tuộc", decoy:"Mực Nang" },
-{ main:"Mực Nang", decoy:"Mực Ống" },
-{ main:"Mực Ống", decoy:"Mực Nang" },
-{ main:"Mực Lá", decoy:"Mực Nang" },
-{ main:"Tôm Hùm", decoy:"Tôm Sú" },
-{ main:"Tôm Thẻ", decoy:"Tôm Sú" },
-{ main:"Cua Hoàng Đế", decoy:"Cua Biển" },
-{ main:"Ghẹ Xanh", decoy:"Ghẹ Hoa" },
-{ main:"Ghẹ Hoa", decoy:"Ghẹ Xanh" },
-
-{ main:"Sò Điệp", decoy:"Sò Huyết" },
-{ main:"Nghêu", decoy:"Ngao" },
-{ main:"Ngao", decoy:"Nghêu" },
-{ main:"Hàu Sữa", decoy:"Hàu Đá" },
-{ main:"Hàu Đá", decoy:"Hàu Sữa" },
-{ main:"Ốc Mỡ", decoy:"Ốc Hương" },
-{ main:"Ốc Giác", decoy:"Ốc Móng Tay" },
-{ main:"Ốc Móng Tay", decoy:"Ốc Giác" },
-{ main:"Sứa Hộp", decoy:"Sứa Biển" },
-{ main:"Sứa Biển", decoy:"Sứa Hộp" },
-
-// PHƯƠNG TIỆN (401-500)
-
-{ main:"Xe Máy", decoy:"Xe Đạp" },
-{ main:"Xe Đạp Điện", decoy:"Xe Máy Điện" },
-{ main:"Xe Tay Ga", decoy:"Xe Số" },
-{ main:"Xe Côn Tay", decoy:"Xe Số" },
-{ main:"Xe Ô Tô", decoy:"Xe Bán Tải" },
-{ main:"Sedan", decoy:"SUV" },
-{ main:"SUV", decoy:"CUV" },
-{ main:"CUV", decoy:"SUV" },
-{ main:"Hatchback", decoy:"Sedan" },
-{ main:"Coupe", decoy:"Convertible" },
-
-{ main:"Mui Trần", decoy:"Coupe" },
-{ main:"Xe Wagon", decoy:"SUV" },
-{ main:"Xe Minivan", decoy:"MPV" },
-{ main:"MPV", decoy:"Minivan" },
-{ main:"Xe Limousine", decoy:"Sedan" },
-{ main:"Xe Bán Tải", decoy:"Xe Tải" },
-{ main:"Xe Tải", decoy:"Container" },
-{ main:"Container", decoy:"Xe Đầu Kéo" },
-{ main:"Xe Đầu Kéo", decoy:"Container" },
-{ main:"Xe Ben", decoy:"Xe Trộn Bê Tông" },
-
-{ main:"Xe Cứu Hỏa", decoy:"Xe Cứu Thương" },
-{ main:"Xe Cứu Thương", decoy:"Xe Cảnh Sát" },
-{ main:"Xe Cảnh Sát", decoy:"Xe Cứu Hỏa" },
-{ main:"Xe Quân Sự", decoy:"Xe Thiết Giáp" },
-{ main:"Xe Thiết Giáp", decoy:"Xe Tăng" },
-{ main:"Xe Tăng", decoy:"Xe Thiết Giáp" },
-{ main:"Xe Bọc Thép", decoy:"Xe Tăng" },
-{ main:"Xe Buýt", decoy:"Xe Khách" },
-{ main:"Xe Khách", decoy:"Xe Buýt" },
-{ main:"Xe Giường Nằm", decoy:"Xe Limousine" },
-
-{ main:"Taxi", decoy:"Grab" },
-{ main:"Grab", decoy:"Be" },
-{ main:"Be", decoy:"Grab" },
-{ main:"Taxi Truyền Thống", decoy:"Taxi Công Nghệ" },
-{ main:"Xe Điện VinFast", decoy:"Tesla" },
-{ main:"Tesla", decoy:"VinFast" },
-{ main:"Mercedes", decoy:"BMW" },
-{ main:"BMW", decoy:"Audi" },
-{ main:"Audi", decoy:"Mercedes" },
-{ main:"Lexus", decoy:"Acura" },
-
-{ main:"Toyota", decoy:"Honda" },
-{ main:"Honda", decoy:"Mazda" },
-{ main:"Mazda", decoy:"Hyundai" },
-{ main:"Hyundai", decoy:"Kia" },
-{ main:"Kia", decoy:"Hyundai" },
-{ main:"Ford", decoy:"Chevrolet" },
-{ main:"Chevrolet", decoy:"Ford" },
-{ main:"Mitsubishi", decoy:"Subaru" },
-{ main:"Subaru", decoy:"Suzuki" },
-{ main:"Suzuki", decoy:"Yamaha" },
-
-{ main:"Honda Wave", decoy:"Yamaha Sirius" },
-{ main:"Honda Vision", decoy:"Yamaha Janus" },
-{ main:"Honda Air Blade", decoy:"Yamaha NVX" },
-{ main:"Honda SH", decoy:"Piaggio Liberty" },
-{ main:"Piaggio Vespa", decoy:"Piaggio Liberty" },
-{ main:"Yamaha Exciter", decoy:"Honda Winner" },
-{ main:"Honda Winner", decoy:"Yamaha Exciter" },
-{ main:"Suzuki Raider", decoy:"Honda Winner" },
-{ main:"Ducati", decoy:"Kawasaki" },
-{ main:"Kawasaki Ninja", decoy:"Yamaha R15" },
-
-{ main:"BMW S1000RR", decoy:"Yamaha R1" },
-{ main:"Honda CBR", decoy:"Yamaha R6" },
-{ main:"Xe Scooter", decoy:"Xe Tay Ga" },
-{ main:"Xe Đạp Đua", decoy:"Xe Đạp Địa Hình" },
-{ main:"Xe Đạp Địa Hình", decoy:"Xe Touring" },
-{ main:"Xe Touring", decoy:"Xe Đua" },
-{ main:"Xe BMX", decoy:"Xe Fixed Gear" },
-{ main:"Fixed Gear", decoy:"Single Speed" },
-{ main:"Xe Điện", decoy:"Xe Hybrid" },
-{ main:"Xe Hybrid", decoy:"Xe Điện" },
-
-{ main:"Tàu Hỏa", decoy:"Tàu Điện" },
-{ main:"Tàu Điện", decoy:"Metro" },
-{ main:"Metro", decoy:"Tàu Điện" },
-{ main:"Tàu Cao Tốc", decoy:"Tàu Thường" },
-{ main:"Tàu Thủy", decoy:"Phà" },
-{ main:"Phà", decoy:"Du Thuyền" },
-{ main:"Du Thuyền", decoy:"Tàu Du Lịch" },
-{ main:"Ca Nô", decoy:"Xuồng Máy" },
-{ main:"Xuồng Máy", decoy:"Ca Nô" },
-{ main:"Thuyền Buồm", decoy:"Du Thuyền" },
-
-{ main:"Máy Bay", decoy:"Trực Thăng" },
-{ main:"Máy Bay Phản Lực", decoy:"Máy Bay Cánh Quạt" },
-{ main:"Máy Bay Chiến Đấu", decoy:"Máy Bay Ném Bom" },
-{ main:"Máy Bay Dân Dụng", decoy:"Máy Bay Chở Hàng" },
-{ main:"Máy Bay Chở Hàng", decoy:"Máy Bay Dân Dụng" },
-{ main:"Trực Thăng", decoy:"Máy Bay" },
-{ main:"Khinh Khí Cầu", decoy:"Khí Cầu" },
-{ main:"Tàu Lượn", decoy:"Dù Lượn" },
-{ main:"Dù Lượn", decoy:"Tàu Lượn" },
-{ main:"Drone", decoy:"Flycam" },
-
-// công nghệ và điện tử
-// CÔNG NGHỆ & ĐIỆN TỬ (501-600)
-
-{ main:"Điện Thoại", decoy:"Máy Tính Bảng" },
-{ main:"Laptop", decoy:"Máy Tính Để Bàn" },
-{ main:"PC", decoy:"Laptop" },
-{ main:"MacBook", decoy:"iPad" },
-{ main:"iPhone", decoy:"Samsung Galaxy" },
-{ main:"Samsung Galaxy", decoy:"Google Pixel" },
-{ main:"Google Pixel", decoy:"iPhone" },
-{ main:"Xiaomi", decoy:"Redmi" },
-{ main:"Redmi", decoy:"POCO" },
-{ main:"POCO", decoy:"Realme" },
-
-{ main:"OPPO", decoy:"Vivo" },
-{ main:"Vivo", decoy:"OPPO" },
-{ main:"Huawei", decoy:"Honor" },
-{ main:"Honor", decoy:"Huawei" },
-{ main:"Nokia", decoy:"Motorola" },
-{ main:"Motorola", decoy:"Sony Xperia" },
-{ main:"Sony Xperia", decoy:"Google Pixel" },
-{ main:"Asus ROG Phone", decoy:"RedMagic" },
-{ main:"iPad", decoy:"Galaxy Tab" },
-{ main:"Galaxy Tab", decoy:"Xiaomi Pad" },
-
-{ main:"Apple Watch", decoy:"Galaxy Watch" },
-{ main:"Galaxy Watch", decoy:"Huawei Watch" },
-{ main:"Huawei Watch", decoy:"Apple Watch" },
-{ main:"Mi Band", decoy:"Fitbit" },
-{ main:"Fitbit", decoy:"Garmin" },
-{ main:"Garmin", decoy:"Suunto" },
-{ main:"AirPods", decoy:"Galaxy Buds" },
-{ main:"Galaxy Buds", decoy:"AirPods Pro" },
-{ main:"AirPods Pro", decoy:"Sony WF-1000XM5" },
-{ main:"Sony WH-1000XM5", decoy:"Bose QC Ultra" },
-
-{ main:"Tai Nghe Có Dây", decoy:"Tai Nghe Bluetooth" },
-{ main:"Loa Bluetooth", decoy:"Loa Karaoke" },
-{ main:"JBL", decoy:"Marshall" },
-{ main:"Marshall", decoy:"JBL" },
-{ main:"Harman Kardon", decoy:"Bose" },
-{ main:"Bose", decoy:"Sony" },
-{ main:"Micro", decoy:"Tai Nghe" },
-{ main:"Webcam", decoy:"Camera" },
-{ main:"Camera DSLR", decoy:"Camera Mirrorless" },
-{ main:"Canon", decoy:"Nikon" },
-
-{ main:"Sony Alpha", decoy:"Canon EOS" },
-{ main:"Fujifilm", decoy:"Sony Alpha" },
-{ main:"GoPro", decoy:"DJI Action" },
-{ main:"DJI Drone", decoy:"Autel Drone" },
-{ main:"Flycam", decoy:"Drone" },
-{ main:"Máy In", decoy:"Máy Scan" },
-{ main:"Máy Scan", decoy:"Máy Photocopy" },
-{ main:"Máy Photocopy", decoy:"Máy In" },
-{ main:"Máy Chiếu", decoy:"TV" },
-{ main:"Smart TV", decoy:"Android TV Box" },
-
-{ main:"Google TV", decoy:"Android TV" },
-{ main:"Android TV", decoy:"Apple TV" },
-{ main:"Apple TV", decoy:"Chromecast" },
-{ main:"Chromecast", decoy:"Fire TV Stick" },
-{ main:"Fire TV Stick", decoy:"Roku" },
-{ main:"SSD", decoy:"HDD" },
-{ main:"HDD", decoy:"SSD" },
-{ main:"RAM", decoy:"ROM" },
-{ main:"CPU", decoy:"GPU" },
-{ main:"Mainboard", decoy:"Card Màn Hình" },
-
-{ main:"Intel", decoy:"AMD" },
-{ main:"AMD Ryzen", decoy:"Intel Core" },
-{ main:"Intel Core i5", decoy:"Intel Core i7" },
-{ main:"Ryzen 5", decoy:"Ryzen 7" },
-{ main:"NVIDIA", decoy:"AMD Radeon" },
-{ main:"RTX 4060", decoy:"RTX 4070" },
-{ main:"RTX 4070", decoy:"RX 7800 XT" },
-{ main:"RTX 4090", decoy:"RX 7900 XTX" },
-{ main:"Nguồn Máy Tính", decoy:"UPS" },
-{ main:"UPS", decoy:"Ổn Áp" },
-
-{ main:"Bàn Phím", decoy:"Chuột" },
-{ main:"Chuột Gaming", decoy:"Chuột Văn Phòng" },
-{ main:"Bàn Phím Cơ", decoy:"Bàn Phím Membrane" },
-{ main:"Switch Blue", decoy:"Switch Red" },
-{ main:"Switch Brown", decoy:"Switch Red" },
-{ main:"Màn Hình Cong", decoy:"Màn Hình Phẳng" },
-{ main:"Màn Hình 144Hz", decoy:"Màn Hình 240Hz" },
-{ main:"USB", decoy:"Ổ Cứng Di Động" },
-{ main:"Thẻ SD", decoy:"MicroSD" },
-{ main:"MicroSD", decoy:"USB" },
-
-{ main:"WiFi", decoy:"Bluetooth" },
-{ main:"Bluetooth", decoy:"NFC" },
-{ main:"NFC", decoy:"QR Code" },
-{ main:"Router", decoy:"Modem" },
-{ main:"Modem", decoy:"Router" },
-{ main:"Cáp HDMI", decoy:"DisplayPort" },
-{ main:"DisplayPort", decoy:"HDMI" },
-{ main:"USB-C", decoy:"Lightning" },
-{ main:"Lightning", decoy:"USB-C" },
-{ main:"Sạc Nhanh", decoy:"Sạc Không Dây" },
-
-// ĐỒ VẬT TRONG NHÀ & VĂN PHÒNG (601-700)
-
-{ main:"Bàn", decoy:"Ghế" },
-{ main:"Ghế", decoy:"Sofa" },
-{ main:"Sofa", decoy:"Ghế Bành" },
-{ main:"Ghế Bành", decoy:"Ghế Sofa" },
-{ main:"Bàn Ăn", decoy:"Bàn Làm Việc" },
-{ main:"Bàn Học", decoy:"Bàn Làm Việc" },
-{ main:"Bàn Trang Điểm", decoy:"Bàn Làm Việc" },
-{ main:"Tủ Quần Áo", decoy:"Tủ Giày" },
-{ main:"Tủ Giày", decoy:"Kệ Giày" },
-{ main:"Kệ Sách", decoy:"Tủ Sách" },
-
-{ main:"Tủ Sách", decoy:"Kệ Sách" },
-{ main:"Kệ Tivi", decoy:"Tủ Tivi" },
-{ main:"Giường", decoy:"Nệm" },
-{ main:"Nệm", decoy:"Đệm" },
-{ main:"Đệm", decoy:"Nệm Cao Su" },
-{ main:"Chăn", decoy:"Mền" },
-{ main:"Mền", decoy:"Chăn" },
-{ main:"Gối", decoy:"Ôm" },
-{ main:"Gối Ôm", decoy:"Gối Nằm" },
-{ main:"Ga Giường", decoy:"Vỏ Chăn" },
-
-{ main:"Rèm Cửa", decoy:"Màn Cửa" },
-{ main:"Màn Cửa", decoy:"Rèm Cửa" },
-{ main:"Quạt Trần", decoy:"Quạt Đứng" },
-{ main:"Quạt Đứng", decoy:"Quạt Treo Tường" },
-{ main:"Quạt Bàn", decoy:"Quạt Mini" },
-{ main:"Điều Hòa", decoy:"Máy Làm Mát" },
-{ main:"Máy Làm Mát", decoy:"Điều Hòa" },
-{ main:"Máy Lọc Không Khí", decoy:"Máy Hút Ẩm" },
-{ main:"Máy Hút Ẩm", decoy:"Máy Tạo Ẩm" },
-{ main:"Máy Tạo Ẩm", decoy:"Máy Hút Ẩm" },
-
-{ main:"Máy Hút Bụi", decoy:"Robot Hút Bụi" },
-{ main:"Robot Hút Bụi", decoy:"Máy Lau Nhà" },
-{ main:"Máy Lau Nhà", decoy:"Robot Hút Bụi" },
-{ main:"Máy Giặt", decoy:"Máy Sấy" },
-{ main:"Máy Sấy", decoy:"Máy Giặt" },
-{ main:"Tủ Lạnh", decoy:"Tủ Đông" },
-{ main:"Tủ Đông", decoy:"Tủ Mát" },
-{ main:"Tủ Mát", decoy:"Tủ Lạnh" },
-{ main:"Lò Vi Sóng", decoy:"Lò Nướng" },
-{ main:"Lò Nướng", decoy:"Nồi Chiên Không Dầu" },
-
-{ main:"Nồi Chiên Không Dầu", decoy:"Lò Nướng" },
-{ main:"Bếp Gas", decoy:"Bếp Điện" },
-{ main:"Bếp Từ", decoy:"Bếp Hồng Ngoại" },
-{ main:"Bếp Hồng Ngoại", decoy:"Bếp Từ" },
-{ main:"Ấm Siêu Tốc", decoy:"Bình Đun Nước" },
-{ main:"Máy Xay Sinh Tố", decoy:"Máy Ép Chậm" },
-{ main:"Máy Ép Chậm", decoy:"Máy Xay" },
-{ main:"Máy Pha Cà Phê", decoy:"Ấm Pha Trà" },
-{ main:"Nồi Cơm Điện", decoy:"Nồi Áp Suất" },
-{ main:"Nồi Áp Suất", decoy:"Nồi Cơm Điện" },
-
-{ main:"Nồi", decoy:"Chảo" },
-{ main:"Chảo", decoy:"Nồi" },
-{ main:"Dao", decoy:"Kéo" },
-{ main:"Dao Gọt", decoy:"Dao Bếp" },
-{ main:"Dao Bếp", decoy:"Dao Chặt" },
-{ main:"Kéo", decoy:"Dao" },
-{ main:"Thớt", decoy:"Mâm" },
-{ main:"Mâm", decoy:"Khay" },
-{ main:"Khay", decoy:"Mâm" },
-{ main:"Muỗng", decoy:"Thìa" },
-
-{ main:"Đũa", decoy:"Nĩa" },
-{ main:"Nĩa", decoy:"Muỗng" },
-{ main:"Ly", decoy:"Cốc" },
-{ main:"Cốc", decoy:"Ly" },
-{ main:"Tách Trà", decoy:"Tách Cà Phê" },
-{ main:"Bình Nước", decoy:"Bình Giữ Nhiệt" },
-{ main:"Bình Giữ Nhiệt", decoy:"Phích Nước" },
-{ main:"Phích Nước", decoy:"Bình Giữ Nhiệt" },
-{ main:"Chai Thủy Tinh", decoy:"Chai Nhựa" },
-{ main:"Hộp Cơm", decoy:"Hộp Đựng Thực Phẩm" },
-
-{ main:"Hộp Nhựa", decoy:"Hộp Thủy Tinh" },
-{ main:"Màng Bọc Thực Phẩm", decoy:"Giấy Bạc" },
-{ main:"Giấy Bạc", decoy:"Giấy Nến" },
-{ main:"Giấy Nến", decoy:"Giấy Bạc" },
-{ main:"Khăn Giấy", decoy:"Khăn Ướt" },
-{ main:"Khăn Lau", decoy:"Khăn Tắm" },
-{ main:"Khăn Tắm", decoy:"Áo Choàng Tắm" },
-{ main:"Xà Phòng", decoy:"Sữa Tắm" },
-{ main:"Dầu Gội", decoy:"Dầu Xả" },
-{ main:"Kem Đánh Răng", decoy:"Nước Súc Miệng" },
-
-{ main:"Bàn Chải Đánh Răng", decoy:"Máy Tăm Nước" },
-{ main:"Máy Tăm Nước", decoy:"Bàn Chải Điện" },
-{ main:"Bàn Chải Điện", decoy:"Bàn Chải Thường" },
-{ main:"Gương", decoy:"Kính" },
-{ main:"Đèn Bàn", decoy:"Đèn Ngủ" },
-{ main:"Đèn Ngủ", decoy:"Đèn Bàn" },
-{ main:"Đèn LED", decoy:"Đèn Huỳnh Quang" },
-{ main:"Ổ Cắm Điện", decoy:"Ổ Chống Sét" },
-{ main:"Ổ Chống Sét", decoy:"Ổ Cắm Điện" },
-{ main:"Công Tắc", decoy:"Ổ Điện" },
-
-{ main:"Bút Bi", decoy:"Bút Chì" },
-{ main:"Bút Máy", decoy:"Bút Bi" },
-{ main:"Bút Dạ Quang", decoy:"Bút Lông" },
-{ main:"Tẩy", decoy:"Gôm" },
-{ main:"Thước Kẻ", decoy:"Ê Ke" },
-{ main:"Compa", decoy:"Thước Đo Góc" },
-{ main:"Kẹp Giấy", decoy:"Kim Bấm" },
-{ main:"Kim Bấm", decoy:"Máy Bấm Kim" },
-{ main:"Máy Bấm Kim", decoy:"Máy Đục Lỗ" },
-{ main:"Sổ Tay", decoy:"Nhật Ký" },
-
-// THỂ THAO - ÂM NHẠC - NHẠC CỤ (701-800)
-
-{ main:"Bóng Đá", decoy:"Bóng Rổ" },
-{ main:"Bóng Chuyền", decoy:"Cầu Lông" },
-{ main:"Bóng Bàn", decoy:"Quần Vợt" },
-{ main:"Quần Vợt", decoy:"Cầu Lông" },
-{ main:"Cầu Lông", decoy:"Bóng Bàn" },
-{ main:"Bóng Chày", decoy:"Bóng Bầu Dục" },
-{ main:"Bóng Bầu Dục", decoy:"Khúc Côn Cầu" },
-{ main:"Khúc Côn Cầu", decoy:"Lacrosse" },
-{ main:"Golf", decoy:"Mini Golf" },
-{ main:"Bowling", decoy:"Bi-a" },
-
-{ main:"Bi-a", decoy:"Snooker" },
-{ main:"Snooker", decoy:"Pool" },
-{ main:"Cờ Vua", decoy:"Cờ Tướng" },
-{ main:"Cờ Tướng", decoy:"Cờ Vây" },
-{ main:"Cờ Vây", decoy:"Cờ Vua" },
-{ main:"Đua Xe F1", decoy:"MotoGP" },
-{ main:"MotoGP", decoy:"Superbike" },
-{ main:"Marathon", decoy:"Chạy Tiếp Sức" },
-{ main:"Bơi Lội", decoy:"Lặn" },
-{ main:"Lặn", decoy:"Lướt Sóng" },
-
-{ main:"Lướt Sóng", decoy:"Lướt Ván" },
-{ main:"Leo Núi", decoy:"Đi Bộ Đường Dài" },
-{ main:"Đấm Bốc", decoy:"Muay Thái" },
-{ main:"Muay Thái", decoy:"Kickboxing" },
-{ main:"Karate", decoy:"Taekwondo" },
-{ main:"Taekwondo", decoy:"Karate" },
-{ main:"Judo", decoy:"Jujitsu" },
-{ main:"Đấu Kiếm", decoy:"Bắn Cung" },
-{ main:"Bắn Cung", decoy:"Bắn Súng" },
-{ main:"Cử Tạ", decoy:"Thể Hình" },
-
-{ main:"Yoga", decoy:"Pilates" },
-{ main:"Pilates", decoy:"Yoga" },
-{ main:"Aerobic", decoy:"Zumba" },
-{ main:"Zumba", decoy:"Aerobic" },
-{ main:"Nhảy Dây", decoy:"Chạy Bộ" },
-{ main:"Đạp Xe", decoy:"Đạp Xe Địa Hình" },
-{ main:"Patin", decoy:"Trượt Băng" },
-{ main:"Trượt Băng", decoy:"Trượt Tuyết" },
-{ main:"Trượt Tuyết", decoy:"Snowboard" },
-{ main:"Snowboard", decoy:"Trượt Tuyết" },
-
-{ main:"Đàn Piano", decoy:"Đàn Organ" },
-{ main:"Đàn Guitar", decoy:"Ukulele" },
-{ main:"Ukulele", decoy:"Mandolin" },
-{ main:"Đàn Violin", decoy:"Viola" },
-{ main:"Viola", decoy:"Cello" },
-{ main:"Cello", decoy:"Contrabass" },
-{ main:"Contrabass", decoy:"Cello" },
-{ main:"Đàn Harp", decoy:"Đàn Lyre" },
-{ main:"Sáo Trúc", decoy:"Sáo Recorder" },
-{ main:"Kèn Trumpet", decoy:"Kèn Cornet" },
-
-{ main:"Kèn Trombone", decoy:"Kèn Trumpet" },
-{ main:"Kèn Saxophone", decoy:"Clarinet" },
-{ main:"Clarinet", decoy:"Oboe" },
-{ main:"Oboe", decoy:"Bassoon" },
-{ main:"Bassoon", decoy:"Clarinet" },
-{ main:"Trống Jazz", decoy:"Trống Điện" },
-{ main:"Trống Điện", decoy:"Trống Jazz" },
-{ main:"Trống Cajon", decoy:"Trống Conga" },
-{ main:"Trống Conga", decoy:"Bongo" },
-{ main:"Bongo", decoy:"Conga" },
-
-{ main:"Micro", decoy:"Loa" },
-{ main:"Loa", decoy:"Ampli" },
-{ main:"Ampli", decoy:"Mixer" },
-{ main:"Mixer", decoy:"Equalizer" },
-{ main:"Equalizer", decoy:"Mixer" },
-{ main:"DJ", decoy:"Producer" },
-{ main:"Producer", decoy:"Nhạc Sĩ" },
-{ main:"Ca Sĩ", decoy:"Nhạc Sĩ" },
-{ main:"Nhạc Sĩ", decoy:"Nhà Sản Xuất" },
-{ main:"Nhạc Trưởng", decoy:"Chỉ Huy Dàn Nhạc" },
-
-{ main:"Opera", decoy:"Nhạc Kịch" },
-{ main:"Rock", decoy:"Metal" },
-{ main:"Metal", decoy:"Hard Rock" },
-{ main:"Pop", decoy:"Dance Pop" },
-{ main:"EDM", decoy:"House" },
-{ main:"House", decoy:"Techno" },
-{ main:"Techno", decoy:"Trance" },
-{ main:"Hip Hop", decoy:"Rap" },
-{ main:"Rap", decoy:"Hip Hop" },
-{ main:"R&B", decoy:"Soul" },
-
-{ main:"Jazz", decoy:"Blues" },
-{ main:"Blues", decoy:"Jazz" },
-{ main:"Country", decoy:"Folk" },
-{ main:"Folk", decoy:"Country" },
-{ main:"Bolero", decoy:"Nhạc Trữ Tình" },
-{ main:"Nhạc Vàng", decoy:"Bolero" },
-{ main:"Giao Hưởng", decoy:"Thính Phòng" },
-{ main:"Acoustic", decoy:"Unplugged" },
-{ main:"Remix", decoy:"Mashup" },
-{ main:"Mashup", decoy:"Remix" },
-
-// ĐỊA LÝ - QUỐC GIA - THÀNH PHỐ - THIÊN NHIÊN (801-900)
-
-{ main:"Việt Nam", decoy:"Thái Lan" },
-{ main:"Nhật Bản", decoy:"Hàn Quốc" },
-{ main:"Trung Quốc", decoy:"Đài Loan" },
-{ main:"Singapore", decoy:"Malaysia" },
-{ main:"Lào", decoy:"Campuchia" },
-{ main:"Indonesia", decoy:"Philippines" },
-{ main:"Úc", decoy:"New Zealand" },
-{ main:"Mỹ", decoy:"Canada" },
-{ main:"Anh", decoy:"Scotland" },
-{ main:"Pháp", decoy:"Ý" },
-
-{ main:"Đức", decoy:"Áo" },
-{ main:"Thụy Sĩ", decoy:"Áo" },
-{ main:"Na Uy", decoy:"Thụy Điển" },
-{ main:"Phần Lan", decoy:"Na Uy" },
-{ main:"Đan Mạch", decoy:"Hà Lan" },
-{ main:"Bỉ", decoy:"Hà Lan" },
-{ main:"Tây Ban Nha", decoy:"Bồ Đào Nha" },
-{ main:"Brazil", decoy:"Argentina" },
-{ main:"Mexico", decoy:"Brazil" },
-{ main:"Ai Cập", decoy:"Ma Rốc" },
-
-{ main:"Nga", decoy:"Ukraine" },
-{ main:"Ấn Độ", decoy:"Pakistan" },
-{ main:"Nepal", decoy:"Bhutan" },
-{ main:"Mông Cổ", decoy:"Kazakhstan" },
-{ main:"Dubai", decoy:"Abu Dhabi" },
-{ main:"Thổ Nhĩ Kỳ", decoy:"Hy Lạp" },
-{ main:"Israel", decoy:"Jordan" },
-{ main:"Nam Phi", decoy:"Kenya" },
-{ main:"Peru", decoy:"Chile" },
-{ main:"Cuba", decoy:"Jamaica" },
-
-{ main:"Hà Nội", decoy:"TP.HCM" },
-{ main:"Đà Nẵng", decoy:"Nha Trang" },
-{ main:"Đà Lạt", decoy:"Sa Pa" },
-{ main:"Huế", decoy:"Hội An" },
-{ main:"Cần Thơ", decoy:"Mỹ Tho" },
-{ main:"Vũng Tàu", decoy:"Phan Thiết" },
-{ main:"Quy Nhơn", decoy:"Tuy Hòa" },
-{ main:"Hạ Long", decoy:"Cát Bà" },
-{ main:"Hải Phòng", decoy:"Quảng Ninh" },
-{ main:"Buôn Ma Thuột", decoy:"Pleiku" },
-
-{ main:"Sông Hồng", decoy:"Sông Mekong" },
-{ main:"Sông Đồng Nai", decoy:"Sông Sài Gòn" },
-{ main:"Biển Đông", decoy:"Vịnh Thái Lan" },
-{ main:"Vịnh Hạ Long", decoy:"Vịnh Lan Hạ" },
-{ main:"Phú Quốc", decoy:"Côn Đảo" },
-{ main:"Lý Sơn", decoy:"Phú Quý" },
-{ main:"Cát Bà", decoy:"Cô Tô" },
-{ main:"Everest", decoy:"K2" },
-{ main:"Phú Sĩ", decoy:"Hallasan" },
-{ main:"Fansipan", decoy:"Ngọc Linh" },
-
-{ main:"Đồi", decoy:"Núi" },
-{ main:"Thung Lũng", decoy:"Cao Nguyên" },
-{ main:"Cao Nguyên", decoy:"Đồng Bằng" },
-{ main:"Đồng Bằng", decoy:"Thảo Nguyên" },
-{ main:"Sa Mạc", decoy:"Thảo Nguyên" },
-{ main:"Rừng Mưa", decoy:"Rừng Lá Kim" },
-{ main:"Rừng Ngập Mặn", decoy:"Rừng Tràm" },
-{ main:"Hồ", decoy:"Đầm" },
-{ main:"Đầm", decoy:"Hồ" },
-{ main:"Thác Nước", decoy:"Suối" },
-
-{ main:"Suối", decoy:"Sông" },
-{ main:"Hang Động", decoy:"Hẻm Núi" },
-{ main:"Đảo", decoy:"Bán Đảo" },
-{ main:"Bán Đảo", decoy:"Đảo" },
-{ main:"Mũi Đất", decoy:"Vịnh" },
-{ main:"Vịnh", decoy:"Đầm Phá" },
-{ main:"Bãi Biển", decoy:"Bờ Biển" },
-{ main:"Rạn San Hô", decoy:"Đảo San Hô" },
-{ main:"Băng Hà", decoy:"Sông Băng" },
-{ main:"Núi Lửa", decoy:"Miệng Núi Lửa" },
-
-{ main:"Mặt Trời", decoy:"Mặt Trăng" },
-{ main:"Trái Đất", decoy:"Sao Hỏa" },
-{ main:"Sao Hỏa", decoy:"Sao Kim" },
-{ main:"Sao Kim", decoy:"Sao Thủy" },
-{ main:"Sao Mộc", decoy:"Sao Thổ" },
-{ main:"Sao Thổ", decoy:"Sao Mộc" },
-{ main:"Thiên Hà", decoy:"Dải Ngân Hà" },
-{ main:"Sao Băng", decoy:"Sao Chổi" },
-{ main:"Sao Chổi", decoy:"Thiên Thạch" },
-{ main:"Thiên Thạch", decoy:"Sao Băng" },
-
-{ main:"Mưa", decoy:"Mưa Đá" },
-{ main:"Bão", decoy:"Lốc Xoáy" },
-{ main:"Lốc Xoáy", decoy:"Vòi Rồng" },
-{ main:"Sấm", decoy:"Chớp" },
-{ main:"Sương Mù", decoy:"Mây" },
-{ main:"Cầu Vồng", decoy:"Hào Quang" },
-{ main:"Bình Minh", decoy:"Hoàng Hôn" },
-{ main:"Hoàng Hôn", decoy:"Bình Minh" },
-{ main:"Xuân", decoy:"Thu" },
-{ main:"Hạ", decoy:"Đông" }
+  // Đồ ăn
+  { main:"Phở", decoy:"Bún Bò", hint:"Món nước nổi tiếng của Việt Nam" },
+  { main:"Cơm Tấm", decoy:"Cơm Chiên", hint:"Món ăn từ cơm" },
+  { main:"Bún Chả", decoy:"Bún Thịt Nướng", hint:"Món bún ăn kèm thịt" },
+  { main:"Hamburger", decoy:"Hot Dog", hint:"Đồ ăn nhanh" },
+  { main:"Sushi", decoy:"Sashimi", hint:"Món ăn Nhật Bản" },
+  { main:"Bánh Xèo", decoy:"Bánh Khọt", hint:"Món bánh truyền thống Việt Nam" },
+  { main:"Gà Rán", decoy:"Gà Nướng", hint:"Món chế biến từ gà" },
+  { main:"Lẩu", decoy:"Nướng", hint:"Hình thức ăn theo nhóm" },
+  { main:"Cháo", decoy:"Súp", hint:"Món ăn dạng lỏng" },
+  { main:"Bánh Flan", decoy:"Pudding", hint:"Món tráng miệng ngọt" },
+
+  // Đồ uống
+  { main:"Nước Cam", decoy:"Nước Táo", hint:"Nước ép trái cây" },
+  { main:"Coca Cola", decoy:"Pepsi", hint:"Nước ngọt có ga" },
+  { main:"Sinh Tố", decoy:"Nước Ép", hint:"Thức uống từ trái cây" },
+  { main:"Bia", decoy:"Rượu", hint:"Đồ uống có cồn" },
+  { main:"Matcha", decoy:"Ca Cao", hint:"Đồ uống có thể pha nóng hoặc lạnh" },
+
+  // Động vật
+  { main:"Voi", decoy:"Tê Giác", hint:"Động vật có kích thước lớn" },
+  { main:"Khỉ", decoy:"Đười Ươi", hint:"Linh trưởng" },
+  { main:"Cá Mập", decoy:"Cá Heo", hint:"Động vật sống dưới biển" },
+  { main:"Cá Sấu", decoy:"Kỳ Đà", hint:"Bò sát" },
+  { main:"Ngựa", decoy:"Lừa", hint:"Động vật dùng để cưỡi" },
+  { main:"Gấu Trúc", decoy:"Gấu Nâu", hint:"Một loài gấu" },
+  { main:"Đại Bàng", decoy:"Diều Hâu", hint:"Chim săn mồi" },
+  { main:"Cừu", decoy:"Dê", hint:"Gia súc" },
+  { main:"Ếch", decoy:"Cóc", hint:"Động vật lưỡng cư" },
+  { main:"Chim Cánh Cụt", decoy:"Hải Cẩu", hint:"Động vật sống ở vùng lạnh" },
+
+  // Phương tiện
+  { main:"Máy Bay", decoy:"Trực Thăng", hint:"Phương tiện hàng không" },
+  { main:"Tàu Hỏa", decoy:"Tàu Điện", hint:"Phương tiện chạy trên đường ray" },
+  { main:"Thuyền", decoy:"Ca Nô", hint:"Phương tiện đường thủy" },
+  { main:"Xe Tải", decoy:"Xe Container", hint:"Xe chở hàng" },
+  { main:"Xe Cứu Hỏa", decoy:"Xe Cứu Thương", hint:"Xe chuyên dụng" },
+
+  // Địa điểm
+  { main:"Bệnh Viện", decoy:"Phòng Khám", hint:"Nơi khám chữa bệnh" },
+  { main:"Trường Học", decoy:"Đại Học", hint:"Nơi học tập" },
+  { main:"Siêu Thị", decoy:"Chợ", hint:"Nơi mua sắm" },
+  { main:"Sân Bay", decoy:"Ga Tàu", hint:"Trung tâm giao thông" },
+  { main:"Nhà Hàng", decoy:"Quán Ăn", hint:"Nơi phục vụ đồ ăn" },
+  { main:"Rạp Chiếu Phim", decoy:"Nhà Hát", hint:"Nơi giải trí" },
+  { main:"Khách Sạn", decoy:"Homestay", hint:"Nơi lưu trú" },
+  { main:"Công Viên", decoy:"Vườn Hoa", hint:"Không gian ngoài trời" },
+  { main:"Bưu Điện", decoy:"Ngân Hàng", hint:"Nơi cung cấp dịch vụ công" },
+  { main:"Nhà Thờ", decoy:"Chùa", hint:"Nơi sinh hoạt tôn giáo" },
+
+  // Thiết bị
+  { main:"Laptop", decoy:"Máy Tính Bàn", hint:"Thiết bị dùng để làm việc" },
+  { main:"Chuột", decoy:"Bàn Phím", hint:"Phụ kiện máy tính" },
+  { main:"Tai Nghe", decoy:"Loa", hint:"Thiết bị phát âm thanh" },
+  { main:"Máy Ảnh", decoy:"Máy Quay", hint:"Thiết bị ghi hình" },
+  { main:"TV", decoy:"Máy Chiếu", hint:"Thiết bị hiển thị hình ảnh" },
+  { main:"Điều Hòa", decoy:"Quạt", hint:"Thiết bị làm mát" },
+  { main:"Tủ Lạnh", decoy:"Tủ Đông", hint:"Thiết bị bảo quản thực phẩm" },
+  { main:"Máy Giặt", decoy:"Máy Sấy", hint:"Thiết bị gia dụng" },
+  { main:"Máy In", decoy:"Máy Photocopy", hint:"Thiết bị văn phòng" },
+  { main:"USB", decoy:"Ổ Cứng", hint:"Thiết bị lưu trữ dữ liệu" },
+
+  // Thể thao
+  { main:"Cầu Lông", decoy:"Tennis", hint:"Môn thể thao dùng vợt" },
+  { main:"Bóng Chuyền", decoy:"Cầu Mây", hint:"Môn thể thao theo đội" },
+  { main:"Bơi Lội", decoy:"Lặn", hint:"Môn thể thao dưới nước" },
+  { main:"Chạy Bộ", decoy:"Đi Bộ", hint:"Hoạt động vận động" },
+  { main:"Đấm Bốc", decoy:"Võ MMA", hint:"Môn đối kháng" },
+
+  // Nghề nghiệp
+  { main:"Bác Sĩ", decoy:"Y Tá", hint:"Nghề trong ngành y" },
+  { main:"Giáo Viên", decoy:"Giảng Viên", hint:"Nghề dạy học" },
+  { main:"Lập Trình Viên", decoy:"Tester", hint:"Nghề trong CNTT" },
+  { main:"Kiến Trúc Sư", decoy:"Kỹ Sư Xây Dựng", hint:"Nghề liên quan xây dựng" },
+  { main:"Đầu Bếp", decoy:"Phụ Bếp", hint:"Nghề trong nhà hàng" },
+
+  // Thiên nhiên
+  { main:"Rừng", decoy:"Rừng Tre", hint:"Hệ sinh thái tự nhiên" },
+  { main:"Sa Mạc", decoy:"Thảo Nguyên", hint:"Một dạng địa hình" },
+  { main:"Thác Nước", decoy:"Suối", hint:"Dòng nước tự nhiên" },
+  { main:"Sông", decoy:"Kênh", hint:"Đường nước" },
+  { main:"Đảo", decoy:"Bán Đảo", hint:"Vùng đất liên quan biển" },
+
+  // Phim ảnh
+  { main:"Hoạt Hình", decoy:"Anime", hint:"Thể loại phim" },
+  { main:"Phim Hài", decoy:"Phim Tình Cảm", hint:"Một thể loại phim" },
+  { main:"Siêu Anh Hùng", decoy:"Viễn Tưởng", hint:"Thể loại điện ảnh" },
+  { main:"Harry Potter", decoy:"Chúa Tể Những Chiếc Nhẫn", hint:"Series phim nổi tiếng" },
+  { main:"Avengers", decoy:"Justice League", hint:"Biệt đội siêu anh hùng" },
+
+  // Âm nhạc
+  { main:"Violin", decoy:"Cello", hint:"Nhạc cụ dây" },
+  { main:"Sáo", decoy:"Kèn Clarinet", hint:"Nhạc cụ hơi" },
+  { main:"Trống", decoy:"Cajon", hint:"Nhạc cụ gõ" },
+  { main:"Micro", decoy:"Loa", hint:"Thiết bị âm thanh" },
+  { main:"Ca Sĩ", decoy:"Nhạc Sĩ", hint:"Nghề trong âm nhạc" },
+
+  // Quần áo
+  { main:"Áo Thun", decoy:"Áo Polo", hint:"Trang phục mặc hằng ngày" },
+  { main:"Quần Jean", decoy:"Quần Tây", hint:"Một loại quần" },
+  { main:"Áo Khoác", decoy:"Áo Vest", hint:"Trang phục mặc ngoài" },
+  { main:"Mũ Lưỡi Trai", decoy:"Nón Len", hint:"Đồ đội đầu" },
+  { main:"Khăn Quàng", decoy:"Cà Vạt", hint:"Phụ kiện thời trang" },
+
+  // Trái cây
+  { main:"Xoài", decoy:"Đu Đủ", hint:"Trái cây nhiệt đới" },
+  { main:"Dưa Hấu", decoy:"Dưa Lưới", hint:"Loại dưa" },
+  { main:"Cam", decoy:"Quýt", hint:"Trái cây có múi" },
+  { main:"Thanh Long", decoy:"Mãng Cầu", hint:"Trái cây Việt Nam" },
+  { main:"Nho", decoy:"Cherry", hint:"Trái cây ăn tươi" },
+
+  // Đồ dùng
+  { main:"Kéo", decoy:"Dao Rọc Giấy", hint:"Dụng cụ cắt" },
+  { main:"Thước Kẻ", decoy:"Ê Ke", hint:"Dụng cụ học tập" },
+  { main:"Ba Lô", decoy:"Túi Xách", hint:"Vật đựng đồ" },
+  { main:"Ô", decoy:"Áo Mưa", hint:"Dùng khi trời mưa" },
+  { main:"Đèn Pin", decoy:"Đèn Bàn", hint:"Thiết bị chiếu sáng" },
+
+  // Game
+  { main:"Minecraft", decoy:"Roblox", hint:"Game nổi tiếng" },
+  { main:"Liên Minh Huyền Thoại", decoy:"Dota 2", hint:"Game MOBA" },
+  { main:"Valorant", decoy:"CS2", hint:"Game FPS" },
+  { main:"PUBG", decoy:"Free Fire", hint:"Game Battle Royale" },
+  { main:"Genshin Impact", decoy:"Wuthering Waves", hint:"Game nhập vai thế giới mở" },
+
+  // Quốc gia
+{ main:"Việt Nam", decoy:"Thái Lan", hint:"Một quốc gia Đông Nam Á" },
+{ main:"Nhật Bản", decoy:"Hàn Quốc", hint:"Quốc gia châu Á phát triển" },
+{ main:"Pháp", decoy:"Ý", hint:"Quốc gia châu Âu" },
+{ main:"Mỹ", decoy:"Canada", hint:"Quốc gia Bắc Mỹ" },
+{ main:"Úc", decoy:"New Zealand", hint:"Quốc gia châu Đại Dương" },
+{ main:"Brazil", decoy:"Argentina", hint:"Quốc gia Nam Mỹ" },
+{ main:"Ai Cập", decoy:"Ma Rốc", hint:"Quốc gia châu Phi" },
+{ main:"Nga", decoy:"Ukraine", hint:"Quốc gia Đông Âu" },
+{ main:"Ấn Độ", decoy:"Pakistan", hint:"Quốc gia Nam Á" },
+{ main:"Singapore", decoy:"Malaysia", hint:"Quốc gia Đông Nam Á" },
+
+// Thành phố
+{ main:"Hà Nội", decoy:"Hải Phòng", hint:"Thành phố Việt Nam" },
+{ main:"Đà Nẵng", decoy:"Nha Trang", hint:"Thành phố ven biển" },
+{ main:"Huế", decoy:"Hội An", hint:"Điểm du lịch miền Trung" },
+{ main:"Tokyo", decoy:"Osaka", hint:"Thành phố Nhật Bản" },
+{ main:"Seoul", decoy:"Busan", hint:"Thành phố Hàn Quốc" },
+{ main:"Paris", decoy:"Lyon", hint:"Thành phố Pháp" },
+{ main:"New York", decoy:"Los Angeles", hint:"Thành phố Mỹ" },
+{ main:"Bangkok", decoy:"Chiang Mai", hint:"Thành phố Thái Lan" },
+{ main:"London", decoy:"Manchester", hint:"Thành phố Anh" },
+{ main:"Rome", decoy:"Milan", hint:"Thành phố Ý" },
+
+// Hoa
+{ main:"Hoa Hồng", decoy:"Hoa Tulip", hint:"Một loài hoa" },
+{ main:"Hoa Mai", decoy:"Hoa Đào", hint:"Hoa ngày Tết" },
+{ main:"Hoa Sen", decoy:"Hoa Súng", hint:"Hoa dưới nước" },
+{ main:"Hoa Lan", decoy:"Hoa Ly", hint:"Hoa thường làm quà" },
+{ main:"Hoa Cúc", decoy:"Hoa Hướng Dương", hint:"Loài hoa phổ biến" },
+{ main:"Hoa Giấy", decoy:"Hoa Mười Giờ", hint:"Hoa trồng trong sân" },
+{ main:"Hoa Phượng", decoy:"Hoa Bằng Lăng", hint:"Hoa mùa hè" },
+{ main:"Hoa Oải Hương", decoy:"Hoa Cẩm Tú Cầu", hint:"Hoa trang trí" },
+{ main:"Hoa Đồng Tiền", decoy:"Hoa Cẩm Chướng", hint:"Hoa cắm bình" },
+{ main:"Hoa Trạng Nguyên", decoy:"Hoa Poinsettia", hint:"Hoa màu đỏ" },
+
+// Cây cối
+{ main:"Cây Dừa", decoy:"Cây Cau", hint:"Loại cây thân cao" },
+{ main:"Cây Tre", decoy:"Cây Trúc", hint:"Loại cây thân rỗng" },
+{ main:"Cây Xoài", decoy:"Cây Mít", hint:"Cây ăn quả" },
+{ main:"Cây Chuối", decoy:"Cây Đu Đủ", hint:"Cây cho trái" },
+{ main:"Cây Thông", decoy:"Cây Tùng", hint:"Cây lá kim" },
+{ main:"Cây Bàng", decoy:"Cây Phượng", hint:"Cây trồng ven đường" },
+{ main:"Cây Bưởi", decoy:"Cây Cam", hint:"Cây có múi" },
+{ main:"Cây Chanh", decoy:"Cây Quất", hint:"Cây nhỏ có quả" },
+{ main:"Cây Cà Phê", decoy:"Cây Ca Cao", hint:"Cây công nghiệp" },
+{ main:"Cây Cao Su", decoy:"Cây Điều", hint:"Cây trồng kinh tế" },
+
+// Hành tinh
+{ main:"Trái Đất", decoy:"Sao Hỏa", hint:"Một hành tinh" },
+{ main:"Sao Kim", decoy:"Sao Thủy", hint:"Hành tinh gần Mặt Trời" },
+{ main:"Sao Mộc", decoy:"Sao Thổ", hint:"Hành tinh khí khổng lồ" },
+{ main:"Mặt Trăng", decoy:"Mặt Trời", hint:"Thiên thể trên bầu trời" },
+{ main:"Thiên Hà", decoy:"Tinh Vân", hint:"Đối tượng thiên văn" },
+{ main:"Sao Chổi", decoy:"Thiên Thạch", hint:"Vật thể ngoài không gian" },
+{ main:"Tên Lửa", decoy:"Tàu Vũ Trụ", hint:"Phương tiện không gian" },
+{ main:"Phi Hành Gia", decoy:"Nhà Thiên Văn", hint:"Nghề liên quan vũ trụ" },
+{ main:"Kính Thiên Văn", decoy:"Ống Nhòm", hint:"Thiết bị quan sát" },
+{ main:"NASA", decoy:"ESA", hint:"Cơ quan không gian" },
+
+// Tiền tệ
+{ main:"Đồng", decoy:"Yên", hint:"Đơn vị tiền tệ" },
+{ main:"USD", decoy:"EUR", hint:"Tiền tệ quốc tế" },
+{ main:"Won", decoy:"Yên", hint:"Tiền tệ châu Á" },
+{ main:"Baht", decoy:"Ringgit", hint:"Tiền Đông Nam Á" },
+{ main:"Bitcoin", decoy:"Ethereum", hint:"Tiền điện tử" },
+
+// Trình duyệt
+{ main:"Chrome", decoy:"Edge", hint:"Trình duyệt web" },
+{ main:"Firefox", decoy:"Opera", hint:"Trình duyệt web" },
+{ main:"Safari", decoy:"Chrome", hint:"Trình duyệt máy tính" },
+{ main:"Brave", decoy:"Vivaldi", hint:"Trình duyệt web" },
+{ main:"DuckDuckGo", decoy:"Bing", hint:"Công cụ tìm kiếm" },
+
+// Mạng xã hội
+{ main:"Facebook", decoy:"Instagram", hint:"Mạng xã hội" },
+{ main:"TikTok", decoy:"YouTube Shorts", hint:"Video ngắn" },
+{ main:"Messenger", decoy:"Telegram", hint:"Ứng dụng nhắn tin" },
+{ main:"Discord", decoy:"Slack", hint:"Ứng dụng chat nhóm" },
+{ main:"Threads", decoy:"X", hint:"Mạng xã hội chữ" },
+
+// Hệ điều hành
+{ main:"Windows", decoy:"Linux", hint:"Hệ điều hành" },
+{ main:"Android", decoy:"iOS", hint:"Hệ điều hành điện thoại" },
+{ main:"Ubuntu", decoy:"Fedora", hint:"Bản phân phối Linux" },
+{ main:"macOS", decoy:"Windows", hint:"Hệ điều hành máy tính" },
+{ main:"Debian", decoy:"Arch Linux", hint:"Bản phân phối Linux" },
+
+// Ngôn ngữ lập trình
+{ main:"Java", decoy:"C#", hint:"Ngôn ngữ lập trình" },
+{ main:"JavaScript", decoy:"TypeScript", hint:"Ngôn ngữ web" },
+{ main:"Python", decoy:"Ruby", hint:"Ngôn ngữ lập trình" },
+{ main:"Go", decoy:"Rust", hint:"Ngôn ngữ hiện đại" },
+{ main:"Kotlin", decoy:"Swift", hint:"Ngôn ngữ phát triển mobile" },
+{ main:"PHP", decoy:"Node.js", hint:"Công nghệ backend" },
+{ main:"C", decoy:"C++", hint:"Ngôn ngữ lập trình" },
+{ main:"SQL", decoy:"PL/SQL", hint:"Ngôn ngữ cơ sở dữ liệu" },
+{ main:"Dart", decoy:"Flutter", hint:"Liên quan phát triển ứng dụng" },
+{ main:"R", decoy:"MATLAB", hint:"Ngôn ngữ tính toán" },
+
+// Framework
+{ main:"Spring Boot", decoy:"Quarkus", hint:"Framework Java" },
+{ main:"React", decoy:"Vue", hint:"Framework Frontend" },
+{ main:"Angular", decoy:"React", hint:"Framework web" },
+{ main:"ASP.NET", decoy:".NET MAUI", hint:"Framework Microsoft" },
+{ main:"Laravel", decoy:"CodeIgniter", hint:"Framework PHP" },
+{ main:"Django", decoy:"Flask", hint:"Framework Python" },
+{ main:"Express", decoy:"NestJS", hint:"Framework Node.js" },
+{ main:"Hibernate", decoy:"MyBatis", hint:"ORM Java" },
+{ main:"JUnit", decoy:"TestNG", hint:"Framework kiểm thử" },
+{ main:"Bootstrap", decoy:"Tailwind CSS", hint:"Framework CSS" },
+
+// Thương hiệu xe
+{ main:"Toyota", decoy:"Honda", hint:"Hãng xe Nhật" },
+{ main:"BMW", decoy:"Mercedes", hint:"Hãng xe Đức" },
+{ main:"Audi", decoy:"Volkswagen", hint:"Hãng xe Đức" },
+{ main:"Ford", decoy:"Chevrolet", hint:"Hãng xe Mỹ" },
+{ main:"Hyundai", decoy:"Kia", hint:"Hãng xe Hàn Quốc" },
+{ main:"Tesla", decoy:"BYD", hint:"Hãng xe điện" },
+{ main:"Mazda", decoy:"Subaru", hint:"Hãng xe Nhật" },
+{ main:"Lexus", decoy:"Infiniti", hint:"Thương hiệu xe sang Nhật" },
+{ main:"Ferrari", decoy:"Lamborghini", hint:"Siêu xe Ý" },
+{ main:"Porsche", decoy:"Maserati", hint:"Xe thể thao" },
+
+// Màu sắc
+{ main:"Đỏ", decoy:"Cam", hint:"Một màu sắc" },
+{ main:"Xanh Lá", decoy:"Xanh Dương", hint:"Một màu sắc" },
+{ main:"Tím", decoy:"Hồng", hint:"Một màu sắc" },
+{ main:"Đen", decoy:"Xám", hint:"Một màu trung tính" },
+{ main:"Trắng", decoy:"Kem", hint:"Màu sáng" },
+
+// Pokémon
+{ main:"Pikachu", decoy:"Raichu", hint:"Pokémon" },
+{ main:"Charmander", decoy:"Charmeleon", hint:"Pokémon" },
+{ main:"Squirtle", decoy:"Psyduck", hint:"Pokémon" },
+{ main:"Bulbasaur", decoy:"Oddish", hint:"Pokémon" },
+{ main:"Eevee", decoy:"Vulpix", hint:"Pokémon" },
+{ main:"Snorlax", decoy:"Slaking", hint:"Pokémon" },
+{ main:"Gengar", decoy:"Haunter", hint:"Pokémon hệ ma" },
+{ main:"Lucario", decoy:"Zoroark", hint:"Pokémon nổi tiếng" },
+{ main:"Mew", decoy:"Mewtwo", hint:"Pokémon huyền thoại" },
+{ main:"Dragonite", decoy:"Salamence", hint:"Pokémon rồng" },
+
+// Marvel - DC
+{ main:"Iron Man", decoy:"Batman", hint:"Siêu anh hùng" },
+{ main:"Captain America", decoy:"Superman", hint:"Siêu anh hùng" },
+{ main:"Thor", decoy:"Wonder Woman", hint:"Siêu anh hùng" },
+{ main:"Hulk", decoy:"The Thing", hint:"Nhân vật sức mạnh lớn" },
+{ main:"Spider-Man", decoy:"Flash", hint:"Siêu anh hùng nổi tiếng" },
+{ main:"Doctor Strange", decoy:"Doctor Fate", hint:"Pháp sư" },
+{ main:"Loki", decoy:"Joker", hint:"Nhân vật phản diện nổi tiếng" },
+{ main:"Thanos", decoy:"Darkseid", hint:"Trùm phản diện" },
+{ main:"Black Panther", decoy:"Black Adam", hint:"Nhân vật mặc đồ đen" },
+{ main:"Deadpool", decoy:"Deathstroke", hint:"Lính đánh thuê" },
+
+// Harry Potter
+{ main:"Harry Potter", decoy:"Neville Longbottom", hint:"Học sinh Hogwarts" },
+{ main:"Hermione", decoy:"Ginny", hint:"Nhân vật nữ" },
+{ main:"Ron Weasley", decoy:"Fred Weasley", hint:"Gia đình Weasley" },
+{ main:"Dumbledore", decoy:"McGonagall", hint:"Giáo sư Hogwarts" },
+{ main:"Snape", decoy:"Lupin", hint:"Giáo sư Hogwarts" },
+{ main:"Voldemort", decoy:"Grindelwald", hint:"Phù thủy hắc ám" },
+{ main:"Hufflepuff", decoy:"Ravenclaw", hint:"Nhà ở Hogwarts" },
+{ main:"Gryffindor", decoy:"Slytherin", hint:"Nhà ở Hogwarts" },
+{ main:"Đũa phép", decoy:"Chổi bay", hint:"Đồ vật trong Harry Potter" },
+{ main:"Hedwig", decoy:"Crookshanks", hint:"Thú cưng" },
+
+// Anime
+{ main:"Naruto", decoy:"Boruto", hint:"Anime nổi tiếng" },
+{ main:"Sasuke", decoy:"Itachi", hint:"Gia tộc Uchiha" },
+{ main:"Luffy", decoy:"Ace", hint:"One Piece" },
+{ main:"Zoro", decoy:"Mihawk", hint:"Kiếm sĩ" },
+{ main:"Nami", decoy:"Robin", hint:"Thành viên băng Mũ Rơm" },
+{ main:"Goku", decoy:"Vegeta", hint:"Dragon Ball" },
+{ main:"Gohan", decoy:"Trunks", hint:"Dragon Ball" },
+{ main:"Ichigo", decoy:"Byakuya", hint:"Bleach" },
+{ main:"Eren", decoy:"Levi", hint:"Attack on Titan" },
+{ main:"Tanjiro", decoy:"Zenitsu", hint:"Thanh Gươm Diệt Quỷ" },
+
+// Liên Minh Huyền Thoại
+{ main:"Yasuo", decoy:"Yone", hint:"Tướng Liên Minh" },
+{ main:"Lux", decoy:"Morgana", hint:"Pháp sư" },
+{ main:"Garen", decoy:"Darius", hint:"Đấu sĩ" },
+{ main:"Ahri", decoy:"Akali", hint:"Tướng nữ" },
+{ main:"Lee Sin", decoy:"Udyr", hint:"Đi rừng" },
+{ main:"Ashe", decoy:"Caitlyn", hint:"Xạ thủ" },
+{ main:"Jinx", decoy:"Vi", hint:"Arcane" },
+{ main:"Teemo", decoy:"Heimerdinger", hint:"Yordle" },
+{ main:"Thresh", decoy:"Blitzcrank", hint:"Hỗ trợ" },
+{ main:"Zed", decoy:"Talon", hint:"Sát thủ" },
+
+// Valorant
+{ main:"Jett", decoy:"Neon", hint:"Đặc vụ Valorant" },
+{ main:"Phoenix", decoy:"Yoru", hint:"Đặc vụ Valorant" },
+{ main:"Sage", decoy:"Skye", hint:"Hỗ trợ" },
+{ main:"Omen", decoy:"Fade", hint:"Đặc vụ Valorant" },
+{ main:"Brimstone", decoy:"Harbor", hint:"Controller" },
+{ main:"Killjoy", decoy:"Cypher", hint:"Sentinel" },
+{ main:"Sova", decoy:"Breach", hint:"Initiator" },
+{ main:"Raze", decoy:"Iso", hint:"Duelist" },
+{ main:"Viper", decoy:"Astra", hint:"Controller" },
+{ main:"Chamber", decoy:"Deadlock", hint:"Sentinel" },
+
+// Linh kiện máy tính
+{ main:"CPU", decoy:"GPU", hint:"Linh kiện máy tính" },
+{ main:"RAM", decoy:"ROM", hint:"Bộ nhớ" },
+{ main:"SSD", decoy:"HDD", hint:"Ổ lưu trữ" },
+{ main:"Mainboard", decoy:"Nguồn", hint:"Linh kiện PC" },
+{ main:"Tản Nhiệt Khí", decoy:"Tản Nước", hint:"Làm mát CPU" },
+{ main:"RTX 4070", decoy:"RTX 4080", hint:"Card đồ họa" },
+{ main:"Ryzen 7", decoy:"Core i7", hint:"CPU" },
+{ main:"DDR4", decoy:"DDR5", hint:"Chuẩn RAM" },
+{ main:"M.2", decoy:"SATA", hint:"Chuẩn ổ cứng" },
+{ main:"Case", decoy:"Nguồn", hint:"Linh kiện PC" },
+
+// Hãng điện thoại
+{ main:"iPhone", decoy:"Samsung Galaxy", hint:"Điện thoại" },
+{ main:"Xiaomi", decoy:"Redmi", hint:"Thương hiệu điện thoại" },
+{ main:"OPPO", decoy:"Vivo", hint:"Điện thoại Trung Quốc" },
+{ main:"Google Pixel", decoy:"Nothing Phone", hint:"Điện thoại Android" },
+{ main:"Huawei", decoy:"Honor", hint:"Điện thoại Trung Quốc" },
+
+// Đồng hồ
+{ main:"Rolex", decoy:"Omega", hint:"Đồng hồ cao cấp" },
+{ main:"Casio", decoy:"Citizen", hint:"Đồng hồ Nhật" },
+{ main:"Seiko", decoy:"Orient", hint:"Đồng hồ Nhật" },
+{ main:"G-Shock", decoy:"Baby-G", hint:"Dòng đồng hồ Casio" },
+{ main:"Apple Watch", decoy:"Galaxy Watch", hint:"Đồng hồ thông minh" },
+
+// Hãng hàng không
+{ main:"Vietnam Airlines", decoy:"VietJet Air", hint:"Hãng hàng không Việt Nam" },
+{ main:"Bamboo Airways", decoy:"Pacific Airlines", hint:"Hãng hàng không Việt Nam" },
+{ main:"Singapore Airlines", decoy:"Thai Airways", hint:"Hãng hàng không Đông Nam Á" },
+{ main:"Emirates", decoy:"Qatar Airways", hint:"Hãng hàng không Trung Đông" },
+{ main:"ANA", decoy:"Japan Airlines", hint:"Hãng hàng không Nhật Bản" },
+
+// Kỳ quan thế giới
+{ main:"Vạn Lý Trường Thành", decoy:"Tử Cấm Thành", hint:"Địa danh Trung Quốc" },
+{ main:"Kim Tự Tháp Giza", decoy:"Nhân Sư", hint:"Địa danh Ai Cập" },
+{ main:"Đấu Trường La Mã", decoy:"Tháp Nghiêng Pisa", hint:"Địa danh Ý" },
+{ main:"Machu Picchu", decoy:"Chichen Itza", hint:"Kỳ quan thế giới" },
+{ main:"Taj Mahal", decoy:"Đền Hoa Sen", hint:"Công trình Ấn Độ" },
+
+// Dụng cụ nhà bếp
+{ main:"Nồi", decoy:"Chảo", hint:"Dụng cụ nấu ăn" },
+{ main:"Muỗng", decoy:"Vá", hint:"Dụng cụ nhà bếp" },
+{ main:"Dao Bếp", decoy:"Dao Gọt", hint:"Dụng cụ cắt" },
+{ main:"Thớt Gỗ", decoy:"Thớt Nhựa", hint:"Dụng cụ bếp" },
+{ main:"Nồi Cơm Điện", decoy:"Nồi Áp Suất", hint:"Thiết bị nhà bếp" },
+
+// Nội thất
+{ main:"Sofa", decoy:"Ghế Bành", hint:"Đồ nội thất" },
+{ main:"Tủ Quần Áo", decoy:"Tủ Giày", hint:"Đồ nội thất" },
+{ main:"Giường", decoy:"Ghế Dài", hint:"Đồ trong phòng" },
+{ main:"Bàn Ăn", decoy:"Bàn Làm Việc", hint:"Một loại bàn" },
+{ main:"Kệ Sách", decoy:"Tủ Trưng Bày", hint:"Đồ nội thất" },
+
+// Mỹ phẩm
+{ main:"Son Môi", decoy:"Son Dưỡng", hint:"Mỹ phẩm" },
+{ main:"Kem Chống Nắng", decoy:"Kem Dưỡng", hint:"Mỹ phẩm" },
+{ main:"Nước Hoa Hồng", decoy:"Serum", hint:"Chăm sóc da" },
+{ main:"Mascara", decoy:"Eyeliner", hint:"Trang điểm mắt" },
+{ main:"Phấn Má", decoy:"Phấn Phủ", hint:"Trang điểm" },
+
+// Đấu sĩ
+{ main:"Florentino", decoy:"Ryoma", hint:"Tướng đấu sĩ" },
+{ main:"Richter", decoy:"Qi", hint:"Tướng đấu sĩ" },
+{ main:"Omen", decoy:"Veres", hint:"Tướng solo đường" },
+{ main:"Yena", decoy:"Allain", hint:"Đấu sĩ cơ động" },
+{ main:"Lu Bu", decoy:"Maloch", hint:"Đấu sĩ hồi phục" },
+{ main:"Arthur", decoy:"Thane", hint:"Tướng miễn phí" },
+{ main:"Skud", decoy:"Superman", hint:"Đấu sĩ mở giao tranh" },
+{ main:"Airi", decoy:"Riktor", hint:"Đấu sĩ cơ động" },
+{ main:"Errol", decoy:"Sinestrea", hint:"Tướng hút máu" },
+{ main:"Kil'Groth", decoy:"Omen", hint:"Đẩy lẻ mạnh" },
+
+// Sát thủ
+{ main:"Nakroth", decoy:"Murad", hint:"Sát thủ rừng" },
+{ main:"Murad", decoy:"Aoi", hint:"Sát thủ cơ động" },
+{ main:"Keera", decoy:"Paine", hint:"Sát thủ phép" },
+{ main:"Butterfly", decoy:"Kriknak", hint:"Sát thủ rừng" },
+{ main:"Quillen", decoy:"Batman", hint:"Tàng hình" },
+{ main:"Aoi", decoy:"Nakroth", hint:"Sát thủ nhiều lướt" },
+{ main:"Zill", decoy:"Keera", hint:"Sát thủ phép" },
+{ main:"Ngộ Không", decoy:"Batman", hint:"Đánh chí mạng" },
+{ main:"Paine", decoy:"Zata", hint:"Sát thương phép" },
+{ main:"Kriknak", decoy:"Zephys", hint:"Đi rừng" },
+
+// Pháp sư
+{ main:"Krixi", decoy:"Aleister", hint:"Pháp sư" },
+{ main:"Liliana", decoy:"Tulen", hint:"Pháp sư cơ động" },
+{ main:"Dirak", decoy:"Lorion", hint:"Pháp sư khống chế" },
+{ main:"Natalya", decoy:"Ignis", hint:"Pháp sư cấu rỉa" },
+{ main:"Veera", decoy:"Mganga", hint:"Pháp sư dễ chơi" },
+{ main:"Yue", decoy:"Iggy", hint:"Pháp sư tầm xa" },
+{ main:"Kahlii", decoy:"Azzen'Ka", hint:"Pháp sư" },
+{ main:"Ilumia", decoy:"D'Arcy", hint:"Pháp sư" },
+{ main:"Raz", decoy:"Lorion", hint:"Pháp sư đường giữa" },
+{ main:"Tulen", decoy:"Zata", hint:"Pháp sư cơ động" },
+
+// Xạ thủ
+{ main:"Violet", decoy:"Hayate", hint:"Xạ thủ" },
+{ main:"Tel'Annas", decoy:"Yorn", hint:"Xạ thủ tầm xa" },
+{ main:"Slimz", decoy:"Elsu", hint:"Xạ thủ" },
+{ main:"Capheny", decoy:"Laville", hint:"Xạ thủ mạnh cuối game" },
+{ main:"Joker", decoy:"Valhein", hint:"Xạ thủ" },
+{ main:"Thorne", decoy:"Moren", hint:"Xạ thủ" },
+{ main:"Brunhilda", decoy:"Celica", hint:"Xạ thủ" },
+{ main:"Fennik", decoy:"Eland'orr", hint:"Xạ thủ cơ động" },
+{ main:"Elsu", decoy:"Yorn", hint:"Xạ thủ cấu rỉa" },
+{ main:"Hayate", decoy:"Eland'orr", hint:"Xạ thủ cơ động" },
+
+// Trợ thủ
+{ main:"Alice", decoy:"Annette", hint:"Trợ thủ" },
+{ main:"Rouie", decoy:"Zip", hint:"Trợ thủ đặc biệt" },
+{ main:"Helen", decoy:"Aya", hint:"Trợ thủ hồi máu" },
+{ main:"Krizzix", decoy:"Baldum", hint:"Trợ thủ mở giao tranh" },
+{ main:"Mina", decoy:"Arum", hint:"Trợ thủ chống chịu" },
+{ main:"Omega", decoy:"Cresht", hint:"Đỡ đòn" },
+{ main:"Xeniel", decoy:"Chaugnar", hint:"Trợ thủ" },
+{ main:"Toro", decoy:"Lumburr", hint:"Đỡ đòn" },
+{ main:"Aya", decoy:"Helen", hint:"Hỗ trợ đồng đội" },
+{ main:"Zip", decoy:"Rouie", hint:"Trợ thủ" },
+
+// Đỡ đòn
+{ main:"Maloch", decoy:"Thane", hint:"Đỡ đòn" },
+{ main:"Baldum", decoy:"Toro", hint:"Đỡ đòn" },
+{ main:"Arduin", decoy:"Taara", hint:"Đỡ đòn" },
+{ main:"Ormarr", decoy:"Lumburr", hint:"Đỡ đòn" },
+{ main:"Ata", decoy:"Cresht", hint:"Đỡ đòn" },
+{ main:"Taara", decoy:"Arthur", hint:"Đỡ đòn hồi phục" },
+{ main:"Thane", decoy:"Mina", hint:"Tanker" },
+{ main:"Cresht", decoy:"Omega", hint:"Tanker" },
+{ main:"Lumburr", decoy:"Baldum", hint:"Tanker" },
+{ main:"Arum", decoy:"Mina", hint:"Khống chế" },
+
+// Quái rừng
+{ main:"Rồng Bạo Chúa", decoy:"Rồng Ánh Sáng", hint:"Mục tiêu lớn" },
+{ main:"Rồng Hắc Ám", decoy:"Caesar Bạo Chúa", hint:"Mục tiêu cuối game" },
+{ main:"Caesar", decoy:"Rồng", hint:"Quái lớn" },
+{ main:"Bùa Đỏ", decoy:"Bùa Xanh", hint:"Bùa lợi rừng" },
+{ main:"Dơi Thủ Vệ", decoy:"Chim Trinh Thám", hint:"Quái rừng" },
+
+// Phép bổ trợ
+{ main:"Tốc Biến", decoy:"Tốc Hành", hint:"Phép bổ trợ" },
+{ main:"Trừng Trị", decoy:"Gầm Thét", hint:"Phép bổ trợ" },
+{ main:"Thanh Tẩy", decoy:"Cấp Cứu", hint:"Phép bổ trợ" },
+{ main:"Bộc Phá", decoy:"Suy Nhược", hint:"Phép bổ trợ" },
+{ main:"Cấm Trụ", decoy:"Tăng Tốc", hint:"Phép bổ trợ" },
+
+// Trang bị
+{ main:"Kiếm Muramasa", decoy:"Thương Longinus", hint:"Trang bị xuyên giáp" },
+{ main:"Thánh Kiếm", decoy:"Song Đao Bão Táp", hint:"Trang bị chí mạng" },
+{ main:"Hercule Thịnh Nộ", decoy:"Giáp Hộ Mệnh", hint:"Trang bị công" },
+{ main:"Giày Kiên Cường", decoy:"Giày Hộ Vệ", hint:"Trang bị giày" },
+{ main:"Kiếm Fafnir", decoy:"Diệt Thần Cung", hint:"Trang bị xạ thủ" },
+{ main:"Vương Miện Hecate", decoy:"Trượng Bùng Nổ", hint:"Trang bị phép" },
+{ main:"Sách Truy Hồn", decoy:"Trượng Hỗn Mang", hint:"Trang bị pháp sư" },
+{ main:"Giáp Gaia", decoy:"Huân Chương Troy", hint:"Trang bị phòng thủ" },
+{ main:"Khiên Thất Truyền", decoy:"Khiên Huyền Thoại", hint:"Trang bị thủ" },
+{ main:"Nanh Fenrir", decoy:"Kiếm Rankbreaker", hint:"Trang bị sát thương" }
 ];
 
   const SPY_TITLE = "KẺ MẠO DANH";
+  const WHITE_TITLE = "MR. WHITE";
 
   let state = {
-    mode: 'classic',
-    spyHint: false,
+    whiteHint: false,
     numPlayers: 6,
     numSpies: 1,
+    numWhite: 0,
     minutes: 8,
     names: [],
     assignments: [],
     location: null,
+    decoyWord: null,
+    hintText: null,
     currentIndex: 0,
     revealed: false,
     timerSeconds: 0,
@@ -1677,44 +1177,43 @@
     }
   }
 
+  function maxVillains(){
+    // luôn phải còn ít nhất 1 dân thường
+    return Math.max(0, state.numPlayers - 1);
+  }
+
+  function clampVillains(){
+    while(state.numSpies + state.numWhite > maxVillains() && (state.numSpies > 0 || state.numWhite > 0)){
+      if(state.numWhite > 0) state.numWhite--;
+      else if(state.numSpies > 0) state.numSpies--;
+    }
+  }
+
   function updateSetupUI(){
     $('players-count').textContent = state.numPlayers;
     $('spies-count').textContent = state.numSpies;
+    $('whites-count').textContent = state.numWhite;
     $('time-value').textContent = state.minutes;
     renderNameInputs();
   }
 
-  $('minus-players').onclick = () => { state.numPlayers = clamp(state.numPlayers-1,3,10); if(state.numSpies > Math.max(1, Math.floor(state.numPlayers/3))) state.numSpies = Math.max(1, Math.floor(state.numPlayers/3)); updateSetupUI(); };
+  $('minus-players').onclick = () => { state.numPlayers = clamp(state.numPlayers-1,3,10); clampVillains(); updateSetupUI(); };
   $('plus-players').onclick = () => { state.numPlayers = clamp(state.numPlayers+1,3,10); updateSetupUI(); };
-  $('minus-spies').onclick = () => { state.numSpies = clamp(state.numSpies-1,1,3); updateSetupUI(); };
-  $('plus-spies').onclick = () => { state.numSpies = clamp(state.numSpies+1,1,Math.max(1,Math.floor(state.numPlayers/2))); updateSetupUI(); };
+  $('minus-spies').onclick = () => { state.numSpies = clamp(state.numSpies-1,0,maxVillains()); updateSetupUI(); };
+  $('plus-spies').onclick = () => { state.numSpies = clamp(state.numSpies+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
+  $('minus-whites').onclick = () => { state.numWhite = clamp(state.numWhite-1,0,maxVillains()); updateSetupUI(); };
+  $('plus-whites').onclick = () => { state.numWhite = clamp(state.numWhite+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-time').onclick = () => { state.minutes = clamp(state.minutes-1,1,20); updateSetupUI(); };
   $('plus-time').onclick = () => { state.minutes = clamp(state.minutes+1,1,20); updateSetupUI(); };
 
   updateSetupUI();
 
-  const MODE_DESC = {
-    classic: 'Mọi người biết cùng một địa điểm, riêng kẻ mạo danh biết mình không biết gì — họ phải giả vờ.',
-    keyword: 'Mọi người nhận một từ khóa. Kẻ mạo danh nhận từ khóa khác, gần giống — và không hề biết mình là kẻ mạo danh!'
-  };
-
-  $('mode-classic').onclick = () => setMode('classic');
-  $('mode-keyword').onclick = () => setMode('keyword');
-
-  function setMode(m){
-    state.mode = m;
-    $('mode-classic').classList.toggle('active', m === 'classic');
-    $('mode-keyword').classList.toggle('active', m === 'keyword');
-    $('mode-desc').textContent = MODE_DESC[m];
-    $('spy-hint-row').style.display = (m === 'classic') ? 'flex' : 'none';
-  }
-
-  $('spy-hint-toggle').onclick = () => {
-    state.spyHint = !state.spyHint;
-    $('spy-hint-toggle').setAttribute('aria-pressed', state.spyHint ? 'true' : 'false');
-    $('spy-hint-caption').textContent = state.spyHint
-      ? 'Bật — kẻ mạo danh sẽ nhận một gợi ý mơ hồ'
-      : 'Tắt — kẻ mạo danh không biết gì cả';
+  $('mrwhite-hint-toggle').onclick = () => {
+    state.whiteHint = !state.whiteHint;
+    $('mrwhite-hint-toggle').setAttribute('aria-pressed', state.whiteHint ? 'true' : 'false');
+    $('mrwhite-hint-caption').textContent = state.whiteHint
+      ? 'Bật — Mr. White nhận một gợi ý mơ hồ về chủ đề'
+      : 'Tắt — Mr. White hoàn toàn không biết gì';
   };
 
   // ---------- Start game: assign roles ----------
@@ -1728,25 +1227,27 @@
   }
 
   $('start-btn').onclick = () => {
+    if(state.numSpies + state.numWhite < 1){
+      alert('Cần ít nhất 1 Kẻ Mạo Danh hoặc Mr. White để bắt đầu ván chơi.');
+      return;
+    }
+    const pair = WORD_PAIRS[Math.floor(Math.random()*WORD_PAIRS.length)];
+    state.location = pair.main;
+    state.decoyWord = pair.decoy;
+    state.hintText = pair.hint;
+
     const order = shuffle([...Array(state.numPlayers).keys()]);
     const spyIdx = new Set(order.slice(0, state.numSpies));
+    const whiteIdx = new Set(order.slice(state.numSpies, state.numSpies + state.numWhite));
 
     state.assignments = [];
-
-    if(state.mode === 'keyword'){
-      const pair = WORD_PAIRS[Math.floor(Math.random()*WORD_PAIRS.length)];
-      state.location = pair.main;
-      state.decoyWord = pair.decoy;
-      for(let i=0;i<state.numPlayers;i++){
-        const isSpy = spyIdx.has(i);
-        state.assignments.push({ spy:isSpy, word: isSpy ? pair.decoy : pair.main });
-      }
-    } else {
-      const loc = LOCATIONS[Math.floor(Math.random()*LOCATIONS.length)];
-      state.location = loc;
-      state.decoyWord = null;
-      for(let i=0;i<state.numPlayers;i++){
-        state.assignments.push({ spy: spyIdx.has(i) });
+    for(let i=0;i<state.numPlayers;i++){
+      if(whiteIdx.has(i)){
+        state.assignments.push({ role:'mrwhite' });
+      } else if(spyIdx.has(i)){
+        state.assignments.push({ role:'spy', word: pair.decoy });
+      } else {
+        state.assignments.push({ role:'villager', word: pair.main });
       }
     }
 
@@ -1781,23 +1282,18 @@
     state.pullProgress = 0;
 
     const a = state.assignments[i];
-    if(state.mode === 'keyword'){
+    if(a.role === 'mrwhite'){
+      $('role-eyebrow').textContent = 'BẠN LÀ';
+      $('role-loc').textContent = WHITE_TITLE;
+      $('role-title').textContent = state.whiteHint
+        ? 'Gợi ý: ' + state.hintText + '. Hãy quan sát và bịa thật khéo!'
+        : 'Bạn không có từ khóa nào cả. Hãy quan sát và bịa thật khéo để không bị lộ!';
+      dossier.classList.add('spy');
+    } else {
+      // villager và spy đều thấy giao diện giống hệt nhau — spy không biết mình khác biệt
       $('role-eyebrow').textContent = 'TỪ KHÓA';
       $('role-loc').textContent = a.word;
       $('role-title').textContent = 'Ghi nhớ từ khóa này. Đừng nói ra trực tiếp — chỉ mô tả hoặc gợi ý!';
-    } else if(a.spy){
-      $('role-eyebrow').textContent = 'BẠN LÀ';
-      $('role-loc').textContent = SPY_TITLE;
-      if(state.spyHint){
-        $('role-title').textContent = 'Gợi ý: ' + LOCATION_HINTS[state.location] + '. Hãy nghe ngóng và giả vờ!';
-      } else {
-        $('role-title').textContent = 'Bạn không biết địa điểm. Hãy nghe ngóng và giả vờ!';
-      }
-      dossier.classList.add('spy');
-    } else {
-      $('role-eyebrow').textContent = 'ĐỊA ĐIỂM';
-      $('role-loc').textContent = state.location;
-      $('role-title').textContent = 'Bạn là dân thường. Đừng để lộ cho kẻ mạo danh!';
     }
   }
 
@@ -1820,7 +1316,7 @@
 
     if(open){
       const zone = $('stamp-zone');
-      const isDanger = state.mode !== 'keyword' && state.assignments[state.currentIndex].spy;
+      const isDanger = state.assignments[state.currentIndex].role === 'mrwhite';
       zone.classList.remove('impact','danger');
       void zone.offsetWidth; // restart animation
       zone.classList.add('impact');
@@ -1897,12 +1393,12 @@
   function renderLocGrid(){
     const grid = $('loc-grid');
     grid.innerHTML = '';
-    LOCATIONS.slice().sort((a,b)=>a.localeCompare(b,'vi')).forEach(l => {
+    WORD_PAIRS.map(p => p.main).sort((a,b)=>a.localeCompare(b,'vi')).forEach(l => {
       const d = document.createElement('div');
       d.textContent = l;
       grid.appendChild(d);
     });
-    $('loc-total').textContent = LOCATIONS.length;
+    $('loc-total').textContent = WORD_PAIRS.length;
   }
 
   function renderPlayersList(){
@@ -1917,15 +1413,13 @@
 
   function startTimerScreen(){
     showScreen('timer');
-    $('loc-details').style.display = (state.mode === 'keyword') ? 'none' : 'block';
+    $('loc-details').style.display = 'block';
     renderLocGrid();
     renderPlayersList();
     state.timerSeconds = state.minutes * 60;
     state.paused = false;
     $('pause-btn').textContent = 'Tạm Dừng';
-    $('timer-status').textContent = state.mode === 'keyword'
-      ? 'Mô tả từ khóa của bạn — đừng nói ra trực tiếp!'
-      : 'Hỏi nhau về địa điểm — đừng để lộ nếu bạn là kẻ mạo danh';
+    $('timer-status').textContent = 'Mô tả từ khóa của bạn — đừng nói ra trực tiếp!';
     updateTimerFace();
     if(state.timerId) clearInterval(state.timerId);
     state.timerId = setInterval(tick, 1000);
@@ -1984,14 +1478,15 @@
       cardEl.className = 'vote-card'
         + (isOpen ? ' open done' : '')
         + (isLoading ? ' loading' : '')
-        + (isOpen && a.spy ? ' is-spy' : '');
+        + (isOpen && a.role === 'spy' ? ' is-spy' : '')
+        + (isOpen && a.role === 'mrwhite' ? ' is-mrwhite' : '');
       if(state.voteListEntered){
         cardEl.style.animation = 'none';
       } else {
         cardEl.style.animationDelay = (i * 0.05) + 's';
       }
 
-      const roleText = a.spy ? SPY_TITLE : 'DÂN THƯỜNG';
+      const roleText = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : 'DÂN THƯỜNG');
       let statusHtml;
       if(isLoading){
         statusHtml = '<span class="status status-loading"><span class="spinner-dot"></span>Đang xác minh…</span>';
@@ -2032,18 +1527,15 @@
   // ---------- Final reveal ----------
   function showRevealScreen(){
     showScreen('reveal');
-    if(state.mode === 'keyword'){
-      $('reveal-location').textContent = 'Từ khóa chính: ' + state.location + '  ·  Từ khóa mạo danh: ' + state.decoyWord;
-    } else {
-      $('reveal-location').textContent = 'Địa điểm: ' + state.location;
-    }
+    $('reveal-location').textContent = 'Từ khóa chính: ' + state.location + '  ·  Từ khóa kẻ mạo danh: ' + state.decoyWord;
     const list = $('reveal-list');
     list.innerHTML = '';
     for(let i=0;i<state.numPlayers;i++){
       const a = state.assignments[i];
       const row = document.createElement('div');
-      row.className = 'reveal-item' + (a.spy ? ' is-spy' : '');
-      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + (a.spy ? SPY_TITLE : 'Dân thường') + '</span>';
+      const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : 'Dân thường');
+      row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '');
+      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + '</span>';
       list.appendChild(row);
     }
   }
