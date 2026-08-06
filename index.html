@@ -193,7 +193,11 @@
     position:relative;
     overflow:hidden;
     background: repeating-linear-gradient(135deg, rgba(201,153,47,0.03) 0px, rgba(201,153,47,0.03) 10px, transparent 10px, transparent 20px);
+    touch-action:none;
+    cursor:grab;
+    user-select:none;
   }
+  .stamp-zone:active{ cursor:grabbing; }
   .stamp-zone.impact::after{
     content:'';
     position:absolute; inset:0;
@@ -283,6 +287,35 @@
 
   /* ---- Timer screen ---- */
   .timer-wrap{ text-align:center; }
+  .starter-box{
+    text-align:center;
+    border:1px solid var(--amber-dim);
+    border-radius:4px;
+    padding:14px;
+    margin-bottom:18px;
+    background:rgba(201,153,47,0.05);
+    transition: border-color .2s ease;
+  }
+  .starter-label{
+    font-size:11px; letter-spacing:0.25em; text-transform:uppercase; color:var(--amber-dim);
+    margin-bottom:6px;
+  }
+  .starter-name{
+    font-family:'Oswald', sans-serif;
+    font-size:24px;
+    color:var(--paper-dim);
+  }
+  .starter-box.cycling .starter-name{ opacity:0.7; }
+  .starter-box.locked{
+    border-color:var(--amber);
+    animation: starterPop .4s cubic-bezier(.2,1.4,.4,1);
+  }
+  .starter-box.locked .starter-name{
+    color:var(--amber);
+    text-shadow:0 0 14px rgba(201,153,47,0.5);
+  }
+  @keyframes starterPop{ 0%{ transform:scale(1.08); } 100%{ transform:scale(1); } }
+
   .timer-face{
     font-family:'Oswald', sans-serif;
     font-size:64px;
@@ -624,6 +657,11 @@
   <!-- TIMER -->
   <div class="screen" id="screen-timer">
     <div class="card timer-wrap">
+      <div class="starter-box" id="starter-box">
+        <div class="starter-label">🎯 Người Bắt Đầu Gợi Ý</div>
+        <div class="starter-name" id="starter-name">—</div>
+      </div>
+
       <div class="timer-sub">Phiên hỏi cung đang diễn ra</div>
       <div class="timer-face" id="timer-face">08:00</div>
       <div class="timer-sub" id="timer-status">Mô tả từ khóa của bạn — đừng nói ra trực tiếp!</div>
@@ -664,8 +702,8 @@
       <span class="field-label">Kết Quả — Đã Giải Mật</span>
       <div class="role-loc" style="text-align:left; margin-bottom:10px; font-size:24px;" id="reveal-location"></div>
       <div id="reveal-list"></div>
-      <button class="btn" id="restart-btn" style="margin-top:20px;">Ván Mới</button>
-      <button class="btn secondary" id="replay-same-btn">Chơi Lại (cùng người chơi)</button>
+      <button class="btn" id="replay-same-btn" style="margin-top:20px;">Chơi Lại (Cùng Người Chơi)</button>
+      <button class="btn secondary small" id="restart-btn">Ván Mới</button>
     </div>
   </div>
 
@@ -2116,8 +2154,7 @@
     drag = null;
   }
 
-  $('pull-hint').addEventListener('pointerdown', onDragStart);
-  $('card-pullout').addEventListener('pointerdown', onDragStart);
+  $('stamp-zone').addEventListener('pointerdown', onDragStart);
 
   $('next-player-btn').onclick = (e) => {
     e.stopPropagation();
@@ -2170,6 +2207,41 @@
     updateTimerFace();
     if(state.timerId) clearInterval(state.timerId);
     state.timerId = setInterval(tick, 1000);
+
+    pickStarterAndReveal();
+  }
+
+  function pickStarterAndReveal(){
+    const eligible = [];
+    for(let i=0;i<state.numPlayers;i++){
+      if(state.assignments[i].role !== 'mrwhite') eligible.push(i);
+    }
+    const pool = eligible.length ? eligible : [...Array(state.numPlayers).keys()];
+    const starterIndex = pool[Math.floor(Math.random()*pool.length)];
+
+    const box = $('starter-box');
+    const nameEl = $('starter-name');
+    box.classList.remove('locked');
+    box.classList.add('cycling');
+
+    const displayNames = pool.map(i => playerName(i));
+    let ticks = 0;
+    const totalTicks = 14;
+    let delay = 55;
+
+    function tick(){
+      nameEl.textContent = displayNames[Math.floor(Math.random()*displayNames.length)];
+      ticks++;
+      if(ticks < totalTicks){
+        delay += 10;
+        setTimeout(tick, delay);
+      } else {
+        nameEl.textContent = playerName(starterIndex);
+        box.classList.remove('cycling');
+        box.classList.add('locked');
+      }
+    }
+    tick();
   }
 
   function updateTimerFace(){
