@@ -246,6 +246,84 @@
     letter-spacing:0.05em;
   }
 
+  .stats-modal{
+    position:fixed; inset:0;
+    background:rgba(8,7,6,0.82);
+    display:flex; align-items:center; justify-content:center;
+    z-index:76;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease;
+    padding:20px;
+  }
+  .stats-modal.active{ opacity:1; pointer-events:auto; }
+  .stats-panel{
+    max-height:82vh;
+    overflow-y:auto;
+    width:min(400px, 100%);
+  }
+  .stats-player{
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px 14px;
+    margin-top:12px;
+    background:var(--charcoal);
+  }
+  .stats-player-name{
+    font-family:'Oswald', sans-serif;
+    font-size:15px;
+    color:var(--paper);
+    margin-bottom:6px;
+  }
+  .stats-player-nums{
+    font-size:11.5px;
+    color:var(--paper-dim);
+    line-height:1.6;
+    margin-bottom:8px;
+  }
+  .badge-row{
+    display:flex; flex-wrap:wrap; gap:8px;
+  }
+  .badge-chip{
+    display:flex; flex-direction:column; align-items:center;
+    width:56px;
+    font-size:9.5px;
+    text-align:center;
+    color:var(--paper-dim);
+    letter-spacing:0.02em;
+    opacity:0.35;
+  }
+  .badge-chip.earned{ opacity:1; }
+  .badge-chip .badge-icon{
+    font-size:22px;
+    margin-bottom:3px;
+  }
+  .badge-chip.earned .badge-icon{
+    filter:drop-shadow(0 0 6px rgba(201,153,47,0.5));
+  }
+
+  .new-badge-banner{
+    margin-bottom:14px;
+    padding:12px 14px;
+    border:1px solid var(--amber);
+    border-radius:4px;
+    background:rgba(201,153,47,0.08);
+    animation: cardIn .3s ease;
+  }
+  .new-badge-banner .nb-title{
+    font-family:'Oswald', sans-serif;
+    font-size:12px;
+    letter-spacing:0.15em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:6px;
+  }
+  .new-badge-banner .nb-row{
+    font-size:13px;
+    color:var(--paper);
+    padding:3px 0;
+  }
+
   .badge-num{
     font-family:'Oswald', sans-serif;
     font-size:13px;
@@ -805,6 +883,7 @@
       <div style="margin-top:18px;">
         <button class="btn" id="start-btn">Bắt Đầu Chia Hồ Sơ</button>
       </div>
+      <button class="btn secondary small" id="stats-open-setup" style="margin-top:10px; display:none;">📊 Xem Thống Kê & Thành Tích</button>
       <div class="hint">
         Mỗi người sẽ lần lượt xem hồ sơ của mình trên cùng một máy. Có thể đặt số Kẻ Mạo Danh = 0 — khi đó Mr. White sẽ là người duy nhất không biết từ khóa thật, đóng vai "kẻ lạc loài" của ván chơi.
       </div>
@@ -883,8 +962,10 @@
     <div class="card">
       <span class="field-label">Kết Quả — Đã Giải Mật</span>
       <div class="role-loc" style="text-align:left; margin-bottom:10px; font-size:24px;" id="reveal-location"></div>
+      <div id="reveal-new-badges"></div>
       <div id="reveal-list"></div>
       <button class="btn" id="replay-same-btn" style="margin-top:20px;">Chơi Lại (Cùng Người Chơi)</button>
+      <button class="btn secondary small" id="stats-open-reveal" style="margin-top:10px;">📊 Xem Thống Kê & Thành Tích</button>
       <button class="btn secondary small" id="restart-btn">Ván Mới</button>
     </div>
   </div>
@@ -915,6 +996,17 @@
     </div>
 
     <div class="pass-modal-footer" id="pass-modal-footer">Chạm dấu ✕ hoặc nền tối để đóng lại</div>
+  </div>
+</div>
+
+<div class="stats-modal" id="stats-modal">
+  <div class="pass-modal-panel stats-panel">
+    <button class="pass-modal-close" id="stats-close" type="button">✕</button>
+    <div class="pass-modal-name">📊 Thống Kê & Thành Tích</div>
+    <div class="hint" style="margin-top:0; border-top:none; padding-top:0;">
+      Tích lũy qua các ván chơi cùng nhóm này. Bấm "Ván Mới" để làm lại từ đầu.
+    </div>
+    <div id="stats-list"></div>
   </div>
 </div>
 
@@ -2268,8 +2360,17 @@
     state.pendingRevealIndex = null;
     state.voteEnded = false;
     state.voteOutcome = null;
+    state.statsCountedForThisRound = false;
     if(!state.scores || state.scores.length !== state.numPlayers){
       state.scores = new Array(state.numPlayers).fill(0);
+    }
+    if(!state.stats || state.stats.length !== state.numPlayers){
+      state.stats = new Array(state.numPlayers).fill(null).map(() => ({
+        rounds: 0, asSpy: 0, asVillager: 0, asMrWhite: 0,
+        caughtAsBad: 0, escapedAsBad: 0, wronglyAccused: 0,
+        survStreak: 0, bestSurvStreak: 0, mrWhiteEscapes: 0,
+        villagerWinStreak: 0, badges: []
+      }));
     }
     showScreen('pass');
     renderPassScreen();
@@ -2706,9 +2807,79 @@
   };
 
   // ---------- Final reveal ----------
+  const BADGE_DEFS = {
+    camouflage: { icon:'🎭', name:'Bậc Thầy Ngụy Trang', desc:'Sống sót ≥3 ván liên tiếp khi đóng vai xấu' },
+    hunter:     { icon:'🕵️', name:'Thợ Săn Tinh Anh', desc:'Thắng ≥3 ván liên tiếp khi là Dân Thường' },
+    ghost:      { icon:'🥸', name:'Người Vô Hình', desc:'Từng sống sót khi là Mr. White' },
+    wronged:    { icon:'⚖️', name:'Bị Oan', desc:'Bị lật nhầm (là Dân Thường) ≥3 lần' },
+    dragon:     { icon:'🔥', name:'Điểm Rồng', desc:'Đạt từ 5 điểm tích lũy trở lên' }
+  };
+
+  function updateStatsAfterRound(){
+    if(state.statsCountedForThisRound) return;
+    state.statsCountedForThisRound = true;
+    state.newBadges = [];
+
+    for(let i=0;i<state.numPlayers;i++){
+      const s = state.stats[i];
+      const role = state.assignments[i].role;
+      const revealed = state.voteRevealed.has(i);
+      s.rounds++;
+
+      if(role === 'spy') s.asSpy++;
+      else if(role === 'villager') s.asVillager++;
+      else if(role === 'mrwhite') s.asMrWhite++;
+
+      if(role === 'spy' || role === 'mrwhite'){
+        if(revealed){
+          s.caughtAsBad++;
+          s.survStreak = 0;
+        } else {
+          s.escapedAsBad++;
+          s.survStreak++;
+          if(s.survStreak > s.bestSurvStreak) s.bestSurvStreak = s.survStreak;
+          if(role === 'mrwhite') s.mrWhiteEscapes++;
+        }
+      }
+
+      if(role === 'villager'){
+        if(revealed) s.wronglyAccused++;
+        if(state.voteOutcome === 'villagers') s.villagerWinStreak++;
+        else if(state.voteOutcome === 'spies') s.villagerWinStreak = 0;
+      }
+
+      const earn = (key) => {
+        if(!s.badges.includes(key)){
+          s.badges.push(key);
+          state.newBadges.push({ i, key });
+        }
+      };
+      if(s.bestSurvStreak >= 3) earn('camouflage');
+      if(s.villagerWinStreak >= 3) earn('hunter');
+      if(s.mrWhiteEscapes >= 1) earn('ghost');
+      if(s.wronglyAccused >= 3) earn('wronged');
+      if((state.scores[i] || 0) >= 5) earn('dragon');
+    }
+  }
+
+  function renderNewBadges(){
+    const box = $('reveal-new-badges');
+    if(!state.newBadges || !state.newBadges.length){
+      box.innerHTML = '';
+      return;
+    }
+    let rows = state.newBadges.map(nb => {
+      const def = BADGE_DEFS[nb.key];
+      return '<div class="nb-row">' + def.icon + ' <b>' + playerName(nb.i) + '</b> vừa đạt "' + def.name + '"!</div>';
+    }).join('');
+    box.innerHTML = '<div class="new-badge-banner"><div class="nb-title">🏅 Thành Tích Mới</div>' + rows + '</div>';
+  }
+
   function showRevealScreen(){
     showScreen('reveal');
+    updateStatsAfterRound();
     $('reveal-location').textContent = 'Từ khóa chính: ' + state.location + '  ·  Từ khóa kẻ mạo danh: ' + state.decoyWord;
+    renderNewBadges();
     const list = $('reveal-list');
     list.innerHTML = '';
     for(let i=0;i<state.numPlayers;i++){
@@ -2720,11 +2891,55 @@
       row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + ' · ' + score + ' điểm</span>';
       list.appendChild(row);
     }
+    $('stats-open-setup').style.display = 'block';
   }
+
+  // ---------- Modal thống kê & thành tích ----------
+  function renderStatsModal(){
+    const wrap = $('stats-list');
+    wrap.innerHTML = '';
+    if(!state.stats){
+      wrap.innerHTML = '<div class="feedback-empty" style="text-align:center; color:var(--paper-dim); padding:20px 0;">Chưa có dữ liệu — chơi ít nhất 1 ván để xem thống kê.</div>';
+      return;
+    }
+    for(let i=0;i<state.numPlayers;i++){
+      const s = state.stats[i];
+      const div = document.createElement('div');
+      div.className = 'stats-player';
+      const badgeRow = Object.keys(BADGE_DEFS).map(key => {
+        const def = BADGE_DEFS[key];
+        const earned = s.badges.includes(key);
+        return '<div class="badge-chip' + (earned ? ' earned' : '') + '" title="' + def.name + ' — ' + def.desc + '">' +
+          '<div class="badge-icon">' + (earned ? def.icon : '🔒') + '</div>' + def.name + '</div>';
+      }).join('');
+      div.innerHTML =
+        '<div class="stats-player-name">' + playerName(i) + '</div>' +
+        '<div class="stats-player-nums">' +
+          'Số ván: ' + s.rounds + ' · Điểm hiện tại: ' + (state.scores ? state.scores[i] : 0) + '<br>' +
+          'Kẻ Mạo Danh/Mr. White: bị bắt ' + s.caughtAsBad + ' · thoát ' + s.escapedAsBad + '<br>' +
+          'Dân thường bị lật nhầm: ' + s.wronglyAccused + ' lần' +
+        '</div>' +
+        '<div class="badge-row">' + badgeRow + '</div>';
+      wrap.appendChild(div);
+    }
+  }
+
+  function openStatsModal(){
+    renderStatsModal();
+    $('stats-modal').classList.add('active');
+  }
+  $('stats-open-setup').addEventListener('click', openStatsModal);
+  $('stats-open-reveal').addEventListener('click', openStatsModal);
+  $('stats-close').addEventListener('click', () => $('stats-modal').classList.remove('active'));
+  $('stats-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'stats-modal') $('stats-modal').classList.remove('active');
+  });
 
   $('restart-btn').onclick = () => {
     state.names = [];
     state.scores = null;
+    state.stats = null;
+    $('stats-open-setup').style.display = 'none';
     showScreen('setup');
     updateSetupUI();
   };
