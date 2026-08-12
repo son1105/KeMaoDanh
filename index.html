@@ -245,6 +245,7 @@
     margin-top:14px;
     letter-spacing:0.05em;
   }
+
   .badge-num{
     font-family:'Oswald', sans-serif;
     font-size:13px;
@@ -541,6 +542,59 @@
     margin-top:2px;
   }
   .vote-list{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+
+  .vote-end-banner{
+    margin-top:14px;
+    padding:14px 16px;
+    border-radius:4px;
+    text-align:center;
+    border:1px solid var(--amber);
+    background:rgba(201,153,47,0.08);
+    animation: cardIn .3s ease;
+  }
+  .vote-end-banner.spies-win{
+    border-color:var(--red-bright);
+    background:rgba(197,39,31,0.1);
+  }
+  .vote-end-banner .banner-title{
+    font-family:'Oswald', sans-serif;
+    font-size:16px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:4px;
+  }
+  .vote-end-banner.spies-win .banner-title{ color:var(--red-bright); }
+  .vote-end-banner .banner-sub{
+    font-size:12.5px;
+    color:var(--paper-dim);
+  }
+
+  .vote-card.locked{
+    opacity:0.4;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .score-list{
+    margin-top:10px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .score-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:7px 10px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--charcoal);
+    font-size:13px;
+  }
+  .score-row .score-name{ color:var(--paper); }
+  .score-row .score-value{
+    font-family:'Oswald', sans-serif;
+    color:var(--amber);
+    font-size:15px;
+  }
+
   .vote-card{
     border:1px solid var(--line);
     border-radius:3px;
@@ -811,8 +865,16 @@
       <div class="hint" style="margin-top:6px; border-top:none; padding-top:0;">
         Cả nhóm thảo luận và nêu nghi ngờ. Chạm vào tên một người để lật hồ sơ và công khai vai trò của họ.
       </div>
+
+      <div class="vote-end-banner" id="vote-end-banner" style="display:none;"></div>
+
       <div class="vote-list" id="vote-list"></div>
       <button class="btn" id="finish-vote-btn" style="margin-top:18px;">Xem Tổng Kết Đầy Đủ</button>
+
+      <details style="margin-top:16px;">
+        <summary>Bảng điểm trực tiếp</summary>
+        <div class="score-list" id="score-list"></div>
+      </details>
     </div>
   </div>
 
@@ -877,7 +939,6 @@
 (function(){
   "use strict";
 
-  
   const CATEGORIES = [
     { key:'all', label:'Tất Cả' },
     // Ẩm thực
@@ -2205,6 +2266,11 @@
     state.voteListEntered = false;
     state.modalBusy = false;
     state.pendingRevealIndex = null;
+    state.voteEnded = false;
+    state.voteOutcome = null;
+    if(!state.scores || state.scores.length !== state.numPlayers){
+      state.scores = new Array(state.numPlayers).fill(0);
+    }
     showScreen('pass');
     renderPassScreen();
   };
@@ -2474,11 +2540,57 @@
     state.voteRevealed = state.voteRevealed || new Set();
     state.modalBusy = false;
     state.pendingRevealIndex = null;
+
+    const remaining = remainingCounts();
+    if(remaining.spies === 0){
+      state.voteEnded = true;
+      state.voteOutcome = 'villagers';
+    } else if(remaining.spies >= remaining.villagers){
+      state.voteEnded = true;
+      state.voteOutcome = 'spies';
+    }
+
     renderVoteScreen();
   }
 
   function updateVoteProgress(){
     $('vote-progress').textContent = 'Đã lật ' + state.voteRevealed.size + ' / ' + state.numPlayers + ' hồ sơ';
+  }
+
+  function remainingCounts(){
+    let villagers = 0, spies = 0;
+    for(let i=0;i<state.numPlayers;i++){
+      if(state.voteRevealed.has(i)) continue;
+      if(state.assignments[i].role === 'villager') villagers++;
+      else if(state.assignments[i].role === 'spy') spies++;
+    }
+    return { villagers, spies };
+  }
+
+  function renderScoreList(){
+    const wrap = $('score-list');
+    wrap.innerHTML = '';
+    for(let i=0;i<state.numPlayers;i++){
+      const row = document.createElement('div');
+      row.className = 'score-row';
+      row.innerHTML = '<span class="score-name">' + playerName(i) + '</span><span class="score-value">' + (state.scores ? state.scores[i] : 0) + '</span>';
+      wrap.appendChild(row);
+    }
+  }
+
+  function renderVoteEndBanner(){
+    const banner = $('vote-end-banner');
+    if(!state.voteEnded){
+      banner.style.display = 'none';
+      return;
+    }
+    banner.style.display = 'block';
+    banner.className = 'vote-end-banner' + (state.voteOutcome === 'spies' ? ' spies-win' : '');
+    if(state.voteOutcome === 'villagers'){
+      banner.innerHTML = '<div class="banner-title">🎉 Dân Thường Thắng!</div><div class="banner-sub">Đã tìm ra hết Kẻ Mạo Danh. Vòng bỏ phiếu kết thúc.</div>';
+    } else {
+      banner.innerHTML = '<div class="banner-title">🕵️ Kẻ Mạo Danh Thắng!</div><div class="banner-sub">Số Kẻ Mạo Danh còn lại đã cân bằng với Dân Thường. Vòng bỏ phiếu kết thúc.</div>';
+    }
   }
 
   const ROLE_ICON = { spy:'🕵️', mrwhite:'👻', villager:'🙂' };
@@ -2487,16 +2599,20 @@
     const list = $('vote-list');
     list.innerHTML = '';
     updateVoteProgress();
+    renderVoteEndBanner();
+    renderScoreList();
 
     for(let i=0;i<state.numPlayers;i++){
       const a = state.assignments[i];
       const isOpen = state.voteRevealed.has(i);
+      const locked = state.voteEnded && !isOpen;
 
       const cardEl = document.createElement('div');
       cardEl.className = 'vote-card'
         + (isOpen ? ' open done' : '')
         + (isOpen && a.role === 'spy' ? ' is-spy' : '')
-        + (isOpen && a.role === 'mrwhite' ? ' is-mrwhite' : '');
+        + (isOpen && a.role === 'mrwhite' ? ' is-mrwhite' : '')
+        + (locked ? ' locked' : '');
       if(state.voteListEntered){
         cardEl.style.animation = 'none';
       } else {
@@ -2506,10 +2622,12 @@
       cardEl.innerHTML =
         '<div class="row">' +
           '<span class="who">' + playerName(i) + '</span>' +
-          '<span class="status">' + (isOpen ? 'Đã lật' : 'Chạm để lật') + '</span>' +
+          '<span class="status">' + (isOpen ? 'Đã lật' : (locked ? 'Đã khóa' : 'Chạm để lật')) + '</span>' +
         '</div>';
 
-      cardEl.addEventListener('click', () => openRevealCard(i));
+      if(!locked){
+        cardEl.addEventListener('click', () => openRevealCard(i));
+      }
 
       list.appendChild(cardEl);
     }
@@ -2517,7 +2635,7 @@
   }
 
   function openRevealCard(i){
-    if(state.modalBusy || state.voteRevealed.has(i)) return;
+    if(state.modalBusy || state.voteRevealed.has(i) || state.voteEnded) return;
     state.modalBusy = true;
     state.pendingRevealIndex = null;
 
@@ -2545,11 +2663,37 @@
     }, 1150);
   }
 
+  function applyVoteScoring(revealedRole){
+    if(revealedRole === 'villager'){
+      // vote trúng dân thường -> đoán sai -> tất cả Kẻ Mạo Danh +1 điểm
+      for(let j=0;j<state.numPlayers;j++){
+        if(state.assignments[j].role === 'spy') state.scores[j] += 1;
+      }
+    } else if(revealedRole === 'spy'){
+      // vote trúng Kẻ Mạo Danh -> đoán đúng -> tất cả Dân Thường +1 điểm
+      for(let j=0;j<state.numPlayers;j++){
+        if(state.assignments[j].role === 'villager') state.scores[j] += 1;
+      }
+    }
+    // lật trúng Mr. White: không cộng điểm cho ai
+  }
+
   function closeRevealModal(){
     if(state.pendingRevealIndex == null) return; // vẫn đang xoay, chưa cho đóng
     const i = state.pendingRevealIndex;
     $('reveal-modal').classList.remove('active');
     state.voteRevealed.add(i);
+    applyVoteScoring(state.assignments[i].role);
+
+    const remaining = remainingCounts();
+    if(remaining.spies === 0){
+      state.voteEnded = true;
+      state.voteOutcome = 'villagers';
+    } else if(remaining.spies >= remaining.villagers){
+      state.voteEnded = true;
+      state.voteOutcome = 'spies';
+    }
+
     state.modalBusy = false;
     state.pendingRevealIndex = null;
     renderVoteScreen();
@@ -2571,14 +2715,16 @@
       const a = state.assignments[i];
       const row = document.createElement('div');
       const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : 'Dân thường');
+      const score = state.scores ? state.scores[i] : 0;
       row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '');
-      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + '</span>';
+      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + ' · ' + score + ' điểm</span>';
       list.appendChild(row);
     }
   }
 
   $('restart-btn').onclick = () => {
     state.names = [];
+    state.scores = null;
     showScreen('setup');
     updateSetupUI();
   };
