@@ -18,6 +18,8 @@
     --amber:#c9992f;
     --amber-dim:#8a6c2a;
     --ghost:#8fb3c7;
+    --chaos:#b48ee0;
+    --detective:#7fc9a0;
     --line: rgba(236,227,204,0.14);
     --shadow: 0 20px 50px rgba(0,0,0,0.55);
   }
@@ -130,6 +132,14 @@
     gap:12px;
     margin-bottom:16px;
   }
+  .stepper-row-compact{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .stepper-row-compact .field-label{ font-size:10.5px; letter-spacing:0.08em; }
+  .stepper-row-compact .stepper-compact{ padding:6px 6px; }
+  .stepper-row-compact .stepper-compact button{ width:26px; height:26px; font-size:14px; }
+  .stepper-row-compact .stepper-compact .value{ font-size:17px; min-width:18px; }
   .stepper-row .field-label{ margin-bottom:8px; }
   .stepper-compact{ margin-bottom:0; padding:8px 10px; }
   .stepper-compact button{ width:30px; height:30px; font-size:16px; }
@@ -262,6 +272,54 @@
     overflow-y:auto;
     width:min(400px, 100%);
   }
+  .detective-target-list{
+    margin-top:8px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .detective-target-item{
+    display:flex; align-items:center; gap:10px;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:var(--charcoal);
+    cursor:pointer;
+    font-size:13.5px;
+    color:var(--paper-dim);
+    transition: border-color .15s ease, color .15s ease;
+  }
+  .detective-target-item.checked{
+    border-color:var(--detective);
+    color:var(--paper);
+  }
+  .detective-target-item input{ accent-color: var(--detective); }
+  .detective-result{
+    margin-top:16px;
+    padding:16px;
+    border-radius:4px;
+    text-align:center;
+    animation: cardIn .3s ease;
+  }
+  .detective-result.match{
+    border:1px solid var(--detective);
+    background:rgba(127,201,160,0.1);
+  }
+  .detective-result.nomatch{
+    border:1px solid var(--red-bright);
+    background:rgba(197,39,31,0.1);
+  }
+  .detective-result .dr-title{
+    font-family:'Oswald', sans-serif;
+    font-size:18px;
+    letter-spacing:0.03em;
+    margin-bottom:4px;
+  }
+  .detective-result.match .dr-title{ color:var(--detective); }
+  .detective-result.nomatch .dr-title{ color:var(--red-bright); }
+  .detective-result .dr-sub{
+    font-size:12px;
+    color:var(--paper-dim);
+  }
+
   .stats-player{
     border:1px solid var(--line);
     border-radius:4px;
@@ -358,6 +416,8 @@
     z-index:4;
   }
   .stamp-zone.impact.danger::after{ background:rgba(197,39,31,0.32); }
+  .stamp-zone.impact.chaos::after{ background:rgba(180,142,224,0.32); }
+  .stamp-zone.impact.investig::after{ background:rgba(127,201,160,0.32); }
   @keyframes flashLight{ from{opacity:1;} to{opacity:0;} }
 
   .envelope-flap{
@@ -385,6 +445,18 @@
   }
   .dossier.spy .role-eyebrow{ color:var(--red-bright); }
   .dossier.spy .role-loc{ animation: dangerGlow 1.6s ease-in-out infinite; }
+  .dossier.saboteur .role-eyebrow{ color:var(--chaos); }
+  .dossier.saboteur .role-loc{ animation: chaosGlow 1.6s ease-in-out infinite; color:var(--chaos); }
+  .dossier.detective .role-eyebrow{ color:var(--detective); }
+  .dossier.detective .role-loc{ animation: detectiveGlow 1.6s ease-in-out infinite; color:var(--detective); }
+  @keyframes detectiveGlow{
+    0%,100%{ text-shadow:0 0 0 rgba(127,201,160,0); }
+    50%{ text-shadow:0 0 18px rgba(127,201,160,0.55); }
+  }
+  @keyframes chaosGlow{
+    0%,100%{ text-shadow:0 0 0 rgba(180,142,224,0); }
+    50%{ text-shadow:0 0 18px rgba(180,142,224,0.55); }
+  }
   @keyframes dangerGlow{
     0%,100%{ text-shadow:0 0 0 rgba(197,39,31,0); }
     50%{ text-shadow:0 0 18px rgba(197,39,31,0.55); }
@@ -542,7 +614,10 @@
   .reveal-item .who{ color:var(--paper); }
   .reveal-item .what{ color:var(--paper-dim); }
   .reveal-item.is-spy .what{ color:var(--red-bright); }
+  .round-gain{ color:var(--amber); font-weight:600; }
   .reveal-item.is-mrwhite .what{ color:var(--ghost); }
+  .reveal-item.is-saboteur .what{ color:var(--chaos); }
+  .reveal-item.is-detective .what{ color:var(--detective); }
 
   footer{ text-align:center; margin-top:16px; font-size:10.5px; color:var(--amber-dim); letter-spacing:0.15em; text-transform:uppercase; }
 
@@ -634,6 +709,10 @@
     border-color:var(--red-bright);
     background:rgba(197,39,31,0.1);
   }
+  .vote-end-banner.saboteur-win{
+    border-color:var(--chaos);
+    background:rgba(180,142,224,0.1);
+  }
   .vote-end-banner .banner-title{
     font-family:'Oswald', sans-serif;
     font-size:16px;
@@ -643,6 +722,7 @@
     margin-bottom:4px;
   }
   .vote-end-banner.spies-win .banner-title{ color:var(--red-bright); }
+  .vote-end-banner.saboteur-win .banner-title{ color:var(--chaos); }
   .vote-end-banner .banner-sub{
     font-size:12.5px;
     color:var(--paper-dim);
@@ -703,6 +783,8 @@
   @keyframes spinDot{ to{ transform:rotate(360deg); } }
   .vote-card.done.is-spy{ border-color:var(--red-bright); }
   .vote-card.done.is-mrwhite{ border-color:var(--ghost); }
+  .vote-card.done.is-saboteur{ border-color:var(--chaos); }
+  .vote-card.done.is-detective{ border-color:var(--detective); }
   .vote-card .row{
     display:flex; align-items:center; justify-content:space-between;
     padding:13px 14px;
@@ -722,6 +804,8 @@
   .vote-card.done .status{ color:var(--amber-dim); }
   .vote-card.done.is-spy .status{ color:var(--red-bright); }
   .vote-card.done.is-mrwhite .status{ color:var(--ghost); }
+  .vote-card.done.is-saboteur .status{ color:var(--chaos); }
+  .vote-card.done.is-detective .status{ color:var(--detective); }
   .vote-card .flip{ display:none; }
 
   /* ---- Reveal card modal: xoay rồi lật ---- */
@@ -783,6 +867,8 @@
   }
   .reveal-face-result.is-spy{ border-color:var(--red-bright); }
   .reveal-face-result.is-mrwhite{ border-color:var(--ghost); }
+  .reveal-face-result.is-saboteur{ border-color:var(--chaos); }
+  .reveal-face-result.is-detective{ border-color:var(--detective); }
   .reveal-icon{
     font-size:56px;
     filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
@@ -801,6 +887,8 @@
   }
   .reveal-face-result.is-spy .reveal-role-text{ color:var(--red-bright); }
   .reveal-face-result.is-mrwhite .reveal-role-text{ color:var(--ghost); }
+  .reveal-face-result.is-saboteur .reveal-role-text{ color:var(--chaos); }
+  .reveal-face-result.is-detective .reveal-role-text{ color:var(--detective); }
 
   .reveal-tap-hint{
     font-family:'Oswald', sans-serif;
@@ -849,7 +937,7 @@
         <button id="plus-players">+</button>
       </div>
 
-      <div class="stepper-row">
+      <div class="stepper-row stepper-row-compact">
         <div>
           <span class="field-label">Kẻ mạo danh</span>
           <div class="stepper stepper-compact">
@@ -864,6 +952,22 @@
             <button id="minus-whites">−</button>
             <div><span class="value" id="whites-count">0</span></div>
             <button id="plus-whites">+</button>
+          </div>
+        </div>
+        <div>
+          <span class="field-label">Kẻ phá game</span>
+          <div class="stepper stepper-compact">
+            <button id="minus-saboteurs">−</button>
+            <div><span class="value" id="saboteurs-count">0</span></div>
+            <button id="plus-saboteurs">+</button>
+          </div>
+        </div>
+        <div>
+          <span class="field-label">Thám tử</span>
+          <div class="stepper stepper-compact">
+            <button id="minus-detectives">−</button>
+            <div><span class="value" id="detectives-count">0</span></div>
+            <button id="plus-detectives">+</button>
           </div>
         </div>
       </div>
@@ -993,6 +1097,13 @@
         <div class="pull-grip"></div>
         <div class="pull-label">↑ Kéo Lên Để Xem</div>
       </div>
+    </div>
+
+    <div id="detective-investigate" style="display:none; margin-top:16px;">
+      <span class="field-label">🔍 Chọn đúng 2 người để điều tra</span>
+      <div class="detective-target-list" id="detective-target-list"></div>
+      <button class="btn" id="detective-investigate-btn" style="margin-top:12px; background:var(--detective); box-shadow:none; border:1px solid var(--detective); color:var(--ink);">Điều Tra</button>
+      <div id="detective-result" class="detective-result" style="display:none;"></div>
     </div>
 
     <div class="pass-modal-footer" id="pass-modal-footer">Chạm dấu ✕ hoặc nền tối để đóng lại</div>
@@ -2213,6 +2324,8 @@
 
   const SPY_TITLE = "KẺ MẠO DANH";
   const WHITE_TITLE = "MR. WHITE";
+  const SABOTEUR_TITLE = "KẺ PHÁ GAME";
+  const DETECTIVE_TITLE = "THÁM TỬ";
 
   let state = {
     theme: 'all',
@@ -2220,6 +2333,8 @@
     numPlayers: 6,
     numSpies: 1,
     numWhite: 0,
+    numSaboteur: 0,
+    numDetective: 0,
     minutes: 8,
     names: [],
     assignments: [],
@@ -2269,8 +2384,11 @@
   }
 
   function clampVillains(){
-    while(state.numSpies + state.numWhite > maxVillains() && (state.numSpies > 0 || state.numWhite > 0)){
-      if(state.numWhite > 0) state.numWhite--;
+    while(state.numSpies + state.numWhite + state.numSaboteur + state.numDetective > maxVillains()
+      && (state.numSpies > 0 || state.numWhite > 0 || state.numSaboteur > 0 || state.numDetective > 0)){
+      if(state.numDetective > 0) state.numDetective--;
+      else if(state.numSaboteur > 0) state.numSaboteur--;
+      else if(state.numWhite > 0) state.numWhite--;
       else if(state.numSpies > 0) state.numSpies--;
     }
   }
@@ -2279,6 +2397,8 @@
     $('players-count').textContent = state.numPlayers;
     $('spies-count').textContent = state.numSpies;
     $('whites-count').textContent = state.numWhite;
+    $('saboteurs-count').textContent = state.numSaboteur;
+    $('detectives-count').textContent = state.numDetective;
     $('time-value').textContent = state.minutes;
     renderNameInputs();
   }
@@ -2289,6 +2409,10 @@
   $('plus-spies').onclick = () => { state.numSpies = clamp(state.numSpies+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-whites').onclick = () => { state.numWhite = clamp(state.numWhite-1,0,maxVillains()); updateSetupUI(); };
   $('plus-whites').onclick = () => { state.numWhite = clamp(state.numWhite+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
+  $('minus-saboteurs').onclick = () => { state.numSaboteur = clamp(state.numSaboteur-1,0,maxVillains()); updateSetupUI(); };
+  $('plus-saboteurs').onclick = () => { state.numSaboteur = clamp(state.numSaboteur+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
+  $('minus-detectives').onclick = () => { state.numDetective = clamp(state.numDetective-1,0,maxVillains()); updateSetupUI(); };
+  $('plus-detectives').onclick = () => { state.numDetective = clamp(state.numDetective+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-time').onclick = () => { state.minutes = clamp(state.minutes-1,1,20); updateSetupUI(); };
   $('plus-time').onclick = () => { state.minutes = clamp(state.minutes+1,1,20); updateSetupUI(); };
 
@@ -2327,8 +2451,8 @@
   }
 
   $('start-btn').onclick = () => {
-    if(state.numSpies + state.numWhite < 1){
-      alert('Cần ít nhất 1 Kẻ Mạo Danh hoặc Mr. White để bắt đầu ván chơi.');
+    if(state.numSpies + state.numWhite + state.numSaboteur < 1){
+      alert('Cần ít nhất 1 Kẻ Mạo Danh, Mr. White, hoặc Kẻ Phá Game để bắt đầu ván chơi.');
       return;
     }
     const pool = state.theme === 'all' ? WORD_PAIRS : WORD_PAIRS.filter(p => p.cat === state.theme);
@@ -2340,6 +2464,11 @@
     const order = shuffle([...Array(state.numPlayers).keys()]);
     const spyIdx = new Set(order.slice(0, state.numSpies));
     const whiteIdx = new Set(order.slice(state.numSpies, state.numSpies + state.numWhite));
+    const saboteurIdx = new Set(order.slice(state.numSpies + state.numWhite, state.numSpies + state.numWhite + state.numSaboteur));
+    const detectiveIdx = new Set(order.slice(
+      state.numSpies + state.numWhite + state.numSaboteur,
+      state.numSpies + state.numWhite + state.numSaboteur + state.numDetective
+    ));
 
     state.assignments = [];
     for(let i=0;i<state.numPlayers;i++){
@@ -2347,11 +2476,18 @@
         state.assignments.push({ role:'mrwhite' });
       } else if(spyIdx.has(i)){
         state.assignments.push({ role:'spy', word: pair.decoy });
+      } else if(saboteurIdx.has(i)){
+        const saboteurWord = Math.random() < 0.5 ? pair.main : pair.decoy;
+        state.assignments.push({ role:'saboteur', word: saboteurWord });
+      } else if(detectiveIdx.has(i)){
+        state.assignments.push({ role:'detective' });
       } else {
         state.assignments.push({ role:'villager', word: pair.main });
       }
     }
 
+    state.detectiveResults = {};
+    state.detectiveSelection = [];
     state.currentIndex = 0;
     state.revealed = false;
     state.voteRevealed = new Set();
@@ -2372,6 +2508,7 @@
         villagerWinStreak: 0, badges: []
       }));
     }
+    state.roundStartScores = state.scores.slice();
     showScreen('pass');
     renderPassScreen();
   };
@@ -2389,7 +2526,7 @@
 
     const dossier = $('dossier');
     const card = $('card-pullout');
-    dossier.classList.remove('spy');
+    dossier.classList.remove('spy','saboteur','detective');
     card.style.transition = 'none';
     card.style.transform = 'translateY(100%)';
     $('pull-hint').classList.remove('hidden');
@@ -2398,6 +2535,8 @@
     $('pass-hint').style.display = 'block';
     $('envelope-trigger-label').textContent = 'Chạm Để Mở Hồ Sơ Mật';
     $('pass-modal').classList.remove('active');
+    $('detective-investigate').style.display = 'none';
+    state.detectiveSelection = [];
     state.revealed = false;
     state.hasPeeked = false;
     state.pullProgress = 0;
@@ -2410,6 +2549,16 @@
         ? 'Gợi ý: ' + state.hintText + '. Hãy quan sát và bịa thật khéo!'
         : 'Bạn không có từ khóa nào cả. Hãy quan sát và bịa thật khéo để không bị lộ!';
       dossier.classList.add('spy');
+    } else if(a.role === 'saboteur'){
+      $('role-eyebrow').textContent = 'BẠN LÀ';
+      $('role-loc').textContent = SABOTEUR_TITLE;
+      $('role-title').textContent = 'Từ khóa của bạn: "' + a.word + '". Bạn THẮNG nếu bị vote trúng — hãy cố tình hành động đáng nghi để bị bắt!';
+      dossier.classList.add('saboteur');
+    } else if(a.role === 'detective'){
+      $('role-eyebrow').textContent = 'BẠN LÀ';
+      $('role-loc').textContent = DETECTIVE_TITLE;
+      $('role-title').textContent = 'Gợi ý: ' + state.hintText + '. Bạn không có từ khóa — nhưng ngay bây giờ hãy chọn 2 người bên dưới để điều tra xem họ có cùng từ khóa không!';
+      dossier.classList.add('detective');
     } else {
       // villager và spy đều thấy giao diện giống hệt nhau — spy không biết mình khác biệt
       $('role-eyebrow').textContent = 'TỪ KHÓA';
@@ -2456,13 +2605,105 @@
 
     if(open){
       const zone = $('stamp-zone');
-      const isDanger = state.assignments[state.currentIndex].role === 'mrwhite';
-      zone.classList.remove('impact','danger');
+      const role = state.assignments[state.currentIndex].role;
+      zone.classList.remove('impact','danger','chaos','investig');
       void zone.offsetWidth; // restart animation
       zone.classList.add('impact');
-      if(isDanger) zone.classList.add('danger');
+      if(role === 'mrwhite') zone.classList.add('danger');
+      else if(role === 'saboteur') zone.classList.add('chaos');
+      else if(role === 'detective') zone.classList.add('investig');
+
+      renderDetectiveSection();
+    } else {
+      $('detective-investigate').style.display = 'none';
     }
   }
+
+  // ---------- Khả năng điều tra của Thám Tử ----------
+  function wordsMatch(i, j){
+    const a = state.assignments[i], b = state.assignments[j];
+    const hasWord = (r) => r === 'villager' || r === 'spy' || r === 'saboteur';
+    const aWord = hasWord(a.role) ? a.word : null;
+    const bWord = hasWord(b.role) ? b.word : null;
+    if(aWord === null && bWord === null) return true; // cả 2 chỉ có gợi ý, không có từ khóa -> vẫn tính là trùng
+    if(aWord === null || bWord === null) return false;
+    return aWord === bWord;
+  }
+
+  function renderDetectiveResult(res){
+    const el = $('detective-result');
+    el.style.display = 'block';
+    el.className = 'detective-result ' + (res.match ? 'match' : 'nomatch');
+    el.innerHTML = res.match
+      ? '<div class="dr-title">🔍 TRÙNG TỪ KHÓA</div><div class="dr-sub">' + playerName(res.a) + ' và ' + playerName(res.b) + ' có cùng từ khóa (hoặc cả 2 đều không có từ khóa).</div>'
+      : '<div class="dr-title">🔍 KHÁC TỪ KHÓA</div><div class="dr-sub">' + playerName(res.a) + ' và ' + playerName(res.b) + ' không cùng từ khóa.</div>';
+  }
+
+  function renderDetectiveSection(){
+    const i = state.currentIndex;
+    const a = state.assignments[i];
+    const box = $('detective-investigate');
+    if(a.role !== 'detective'){
+      box.style.display = 'none';
+      return;
+    }
+    box.style.display = 'block';
+
+    const listEl = $('detective-target-list');
+    const btn = $('detective-investigate-btn');
+    const resultEl = $('detective-result');
+    const existing = state.detectiveResults[i];
+
+    if(existing){
+      // Đã điều tra rồi trong ván này -> chỉ hiện lại kết quả cũ
+      listEl.style.display = 'none';
+      btn.style.display = 'none';
+      renderDetectiveResult(existing);
+      return;
+    }
+
+    listEl.style.display = 'flex';
+    btn.style.display = 'block';
+    resultEl.style.display = 'none';
+
+    listEl.innerHTML = '';
+    for(let j=0;j<state.numPlayers;j++){
+      if(j === i) continue; // không tự điều tra chính mình
+      const checked = state.detectiveSelection.includes(j);
+      const item = document.createElement('label');
+      item.className = 'detective-target-item' + (checked ? ' checked' : '');
+      item.innerHTML = '<input type="checkbox" data-idx="' + j + '"' + (checked ? ' checked' : '') + '> ' + playerName(j);
+      listEl.appendChild(item);
+    }
+
+    listEl.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        if(e.target.checked){
+          if(state.detectiveSelection.length >= 2){
+            e.target.checked = false; // đã đủ 2 người, không chọn thêm
+            return;
+          }
+          state.detectiveSelection.push(idx);
+        } else {
+          state.detectiveSelection = state.detectiveSelection.filter(x => x !== idx);
+        }
+        renderDetectiveSection();
+      });
+    });
+  }
+
+  $('detective-investigate-btn').onclick = () => {
+    if(state.detectiveSelection.length !== 2){
+      alert('Hãy chọn đúng 2 người để điều tra.');
+      return;
+    }
+    const [a, b] = state.detectiveSelection;
+    const result = { a, b, match: wordsMatch(a, b) };
+    state.detectiveResults[state.currentIndex] = result;
+    state.detectiveSelection = [];
+    renderDetectiveSection();
+  };
 
   let drag = null;
 
@@ -2646,7 +2887,7 @@
     if(remaining.spies === 0){
       state.voteEnded = true;
       state.voteOutcome = 'villagers';
-    } else if(remaining.spies >= remaining.villagers){
+    } else if(remaining.spies === remaining.nonSpies){
       state.voteEnded = true;
       state.voteOutcome = 'spies';
     }
@@ -2659,13 +2900,15 @@
   }
 
   function remainingCounts(){
-    let villagers = 0, spies = 0;
+    let villagers = 0, spies = 0, nonSpies = 0;
     for(let i=0;i<state.numPlayers;i++){
       if(state.voteRevealed.has(i)) continue;
-      if(state.assignments[i].role === 'villager') villagers++;
-      else if(state.assignments[i].role === 'spy') spies++;
+      const role = state.assignments[i].role;
+      if(role === 'villager') villagers++;
+      if(role === 'spy') spies++;
+      else nonSpies++; // mọi vai trò còn lại chưa bị lật, trừ Kẻ Mạo Danh
     }
-    return { villagers, spies };
+    return { villagers, spies, nonSpies };
   }
 
   function renderScoreList(){
@@ -2686,15 +2929,20 @@
       return;
     }
     banner.style.display = 'block';
-    banner.className = 'vote-end-banner' + (state.voteOutcome === 'spies' ? ' spies-win' : '');
+    let cls = 'vote-end-banner';
+    if(state.voteOutcome === 'spies') cls += ' spies-win';
+    else if(state.voteOutcome === 'saboteur') cls += ' saboteur-win';
+    banner.className = cls;
     if(state.voteOutcome === 'villagers'){
       banner.innerHTML = '<div class="banner-title">🎉 Dân Thường Thắng!</div><div class="banner-sub">Đã tìm ra hết Kẻ Mạo Danh. Vòng bỏ phiếu kết thúc.</div>';
+    } else if(state.voteOutcome === 'spies'){
+      banner.innerHTML = '<div class="banner-title">🕵️ Kẻ Mạo Danh Thắng!</div><div class="banner-sub">Số Kẻ Mạo Danh còn lại đã bằng số người còn lại không phải Kẻ Mạo Danh. Vòng bỏ phiếu kết thúc.</div>';
     } else {
-      banner.innerHTML = '<div class="banner-title">🕵️ Kẻ Mạo Danh Thắng!</div><div class="banner-sub">Số Kẻ Mạo Danh còn lại đã cân bằng với Dân Thường. Vòng bỏ phiếu kết thúc.</div>';
+      banner.innerHTML = '<div class="banner-title">🃏 Kẻ Phá Game Thắng!</div><div class="banner-sub">' + playerName(state.saboteurWinnerIndex) + ' đã cố tình để bị lộ và phá vỡ ván chơi!</div>';
     }
   }
 
-  const ROLE_ICON = { spy:'🕵️', mrwhite:'👻', villager:'🙂' };
+  const ROLE_ICON = { spy:'🕵️', mrwhite:'👻', saboteur:'🃏', detective:'🔍', villager:'🙂' };
 
   function renderVoteScreen(){
     const list = $('vote-list');
@@ -2713,6 +2961,8 @@
         + (isOpen ? ' open done' : '')
         + (isOpen && a.role === 'spy' ? ' is-spy' : '')
         + (isOpen && a.role === 'mrwhite' ? ' is-mrwhite' : '')
+        + (isOpen && a.role === 'saboteur' ? ' is-saboteur' : '')
+        + (isOpen && a.role === 'detective' ? ' is-detective' : '')
         + (locked ? ' locked' : '');
       if(state.voteListEntered){
         cardEl.style.animation = 'none';
@@ -2741,11 +2991,13 @@
     state.pendingRevealIndex = null;
 
     const a = state.assignments[i];
-    const roleText = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : 'DÂN THƯỜNG');
+    const roleText = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : 'DÂN THƯỜNG')));
     const face = $('reveal-face-result');
-    face.classList.remove('is-spy','is-mrwhite');
+    face.classList.remove('is-spy','is-mrwhite','is-saboteur','is-detective');
     if(a.role === 'spy') face.classList.add('is-spy');
     if(a.role === 'mrwhite') face.classList.add('is-mrwhite');
+    if(a.role === 'saboteur') face.classList.add('is-saboteur');
+    if(a.role === 'detective') face.classList.add('is-detective');
 
     $('reveal-icon').textContent = ROLE_ICON[a.role] || ROLE_ICON.villager;
     $('reveal-player-name').textContent = playerName(i);
@@ -2764,17 +3016,20 @@
     }, 1150);
   }
 
-  function applyVoteScoring(revealedRole){
-    if(revealedRole === 'villager'){
-      // vote trúng dân thường -> đoán sai -> tất cả Kẻ Mạo Danh +1 điểm
+  function applyVoteScoring(revealedRole, i){
+    if(revealedRole === 'villager' || revealedRole === 'detective'){
+      // vote trúng dân thường (hoặc Thám Tử, cùng phe dân) -> đoán sai -> tất cả Kẻ Mạo Danh +1 điểm
       for(let j=0;j<state.numPlayers;j++){
         if(state.assignments[j].role === 'spy') state.scores[j] += 1;
       }
     } else if(revealedRole === 'spy'){
-      // vote trúng Kẻ Mạo Danh -> đoán đúng -> tất cả Dân Thường +1 điểm
+      // vote trúng Kẻ Mạo Danh -> đoán đúng -> tất cả Dân Thường (và Thám Tử, cùng phe) +1 điểm
       for(let j=0;j<state.numPlayers;j++){
-        if(state.assignments[j].role === 'villager') state.scores[j] += 1;
+        if(state.assignments[j].role === 'villager' || state.assignments[j].role === 'detective') state.scores[j] += 1;
       }
+    } else if(revealedRole === 'saboteur'){
+      // Kẻ Phá Game thắng ngay khi bị vote trúng
+      state.scores[i] += 2;
     }
     // lật trúng Mr. White: không cộng điểm cho ai
   }
@@ -2784,15 +3039,22 @@
     const i = state.pendingRevealIndex;
     $('reveal-modal').classList.remove('active');
     state.voteRevealed.add(i);
-    applyVoteScoring(state.assignments[i].role);
+    const role = state.assignments[i].role;
+    applyVoteScoring(role, i);
 
-    const remaining = remainingCounts();
-    if(remaining.spies === 0){
+    if(role === 'saboteur'){
       state.voteEnded = true;
-      state.voteOutcome = 'villagers';
-    } else if(remaining.spies >= remaining.villagers){
-      state.voteEnded = true;
-      state.voteOutcome = 'spies';
+      state.voteOutcome = 'saboteur';
+      state.saboteurWinnerIndex = i;
+    } else {
+      const remaining = remainingCounts();
+      if(remaining.spies === 0){
+        state.voteEnded = true;
+        state.voteOutcome = 'villagers';
+      } else if(remaining.spies === remaining.nonSpies){
+        state.voteEnded = true;
+        state.voteOutcome = 'spies';
+      }
     }
 
     state.modalBusy = false;
@@ -2885,10 +3147,13 @@
     for(let i=0;i<state.numPlayers;i++){
       const a = state.assignments[i];
       const row = document.createElement('div');
-      const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : 'Dân thường');
-      const score = state.scores ? state.scores[i] : 0;
-      row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '');
-      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + ' · ' + score + ' điểm</span>';
+      const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : 'Dân thường')));
+      const total = state.scores ? state.scores[i] : 0;
+      const startScore = state.roundStartScores ? state.roundStartScores[i] : 0;
+      const gained = total - startScore;
+      const gainedText = gained > 0 ? ' <span class="round-gain">(+' + gained + ' ván này)</span>' : '';
+      row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '') + (a.role === 'saboteur' ? ' is-saboteur' : '') + (a.role === 'detective' ? ' is-detective' : '');
+      row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + ' · ' + total + ' điểm' + gainedText + '</span>';
       list.appendChild(row);
     }
     $('stats-open-setup').style.display = 'block';
