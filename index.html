@@ -350,8 +350,10 @@
     color:var(--paper-dim);
     letter-spacing:0.02em;
     opacity:0.35;
+    cursor:pointer;
   }
   .badge-chip.earned{ opacity:1; }
+  .badge-chip:active{ transform:scale(0.94); }
   .badge-chip .badge-icon{
     font-size:22px;
     margin-bottom:3px;
@@ -359,6 +361,76 @@
   .badge-chip.earned .badge-icon{
     filter:drop-shadow(0 0 6px rgba(201,153,47,0.5));
   }
+  .badge-detail{
+    margin-top:10px;
+    padding:9px 11px;
+    border:1px solid var(--amber-dim);
+    border-radius:3px;
+    background:rgba(201,153,47,0.06);
+    font-size:12px;
+    color:var(--paper-dim);
+    line-height:1.5;
+    animation: cardIn .2s ease;
+  }
+  .badge-detail b{ color:var(--amber); }
+
+  .role-guide-card{
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:12px 14px;
+    margin-top:12px;
+    background:var(--charcoal);
+  }
+  .role-guide-card .rg-header{
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:6px;
+  }
+  .role-guide-card .rg-icon{ font-size:22px; }
+  .role-guide-card .rg-name{
+    font-family:'Oswald', sans-serif;
+    font-size:15px;
+    color:var(--paper);
+  }
+  .role-guide-card .rg-team{
+    font-size:10px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--amber-dim);
+    margin-left:auto;
+  }
+  .role-guide-card .rg-info{
+    font-size:12.5px;
+    color:var(--paper-dim);
+    line-height:1.6;
+    margin-bottom:6px;
+  }
+  .role-guide-card .rg-scoring{
+    font-size:12px;
+    color:var(--amber);
+    line-height:1.6;
+    border-top:1px dashed var(--line);
+    padding-top:6px;
+  }
+  .role-guide-endcond{
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .role-guide-endcond .rg-title{
+    font-family:'Oswald', sans-serif;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin-bottom:8px;
+  }
+  .role-guide-endcond ul{
+    margin:0; padding-left:18px;
+    font-size:12.5px;
+    color:var(--paper-dim);
+    line-height:1.8;
+  }
+  .role-guide-endcond b{ color:var(--paper); }
 
   .new-badge-banner{
     margin-bottom:14px;
@@ -987,6 +1059,7 @@
       <div style="margin-top:18px;">
         <button class="btn" id="start-btn">Bắt Đầu Chia Hồ Sơ</button>
       </div>
+      <button class="btn secondary small" id="roles-guide-open" style="margin-top:10px;">📖 Xem Vai Trò & Cách Tính Điểm</button>
       <button class="btn secondary small" id="stats-open-setup" style="margin-top:10px; display:none;">📊 Xem Thống Kê & Thành Tích</button>
       <div class="hint">
         Mỗi người sẽ lần lượt xem hồ sơ của mình trên cùng một máy. Có thể đặt số Kẻ Mạo Danh = 0 — khi đó Mr. White sẽ là người duy nhất không biết từ khóa thật, đóng vai "kẻ lạc loài" của ván chơi.
@@ -1107,6 +1180,26 @@
     </div>
 
     <div class="pass-modal-footer" id="pass-modal-footer">Chạm dấu ✕ hoặc nền tối để đóng lại</div>
+  </div>
+</div>
+
+<div class="stats-modal" id="roles-guide-modal">
+  <div class="pass-modal-panel stats-panel">
+    <button class="pass-modal-close" id="roles-guide-close" type="button">✕</button>
+    <div class="pass-modal-name">📖 Vai Trò & Cách Tính Điểm</div>
+    <div class="hint" style="margin-top:0; border-top:none; padding-top:0;">
+      Danh sách sẽ tự cập nhật mỗi khi có vai trò mới được thêm vào game.
+    </div>
+    <div id="roles-guide-list"></div>
+
+    <div class="role-guide-endcond">
+      <div class="rg-title">⚖️ Điều Kiện Kết Thúc Vòng Bỏ Phiếu</div>
+      <ul>
+        <li><b>Dân Thường thắng:</b> đã lật hết toàn bộ Kẻ Mạo Danh.</li>
+        <li><b>Kẻ Mạo Danh thắng:</b> số Kẻ Mạo Danh còn lại (chưa bị lật) bằng số người còn lại không phải Kẻ Mạo Danh.</li>
+        <li><b>Kẻ Phá Game thắng:</b> ngay khi có ai đó bị lật ra là Kẻ Phá Game — kết thúc lập tức.</li>
+      </ul>
+    </div>
   </div>
 </div>
 
@@ -3069,6 +3162,57 @@
   };
 
   // ---------- Final reveal ----------
+  const ROLE_DEFS = [
+    {
+      icon:'🙂', name:'Dân Thường', team:'Phe Dân',
+      info:'Nhận từ khóa chính. Nhiệm vụ: thảo luận, suy luận và tìm ra Kẻ Mạo Danh.',
+      scoring:'Vote trúng Kẻ Mạo Danh: +1 điểm. Có ai đó (Dân Thường/Thám Tử) bị vote nhầm: Kẻ Mạo Danh +1 điểm (Dân Thường không mất điểm, chỉ là phe kia được cộng).'
+    },
+    {
+      icon:'🕵️', name:'Kẻ Mạo Danh', team:'Phe Mạo Danh',
+      info:'Nhận từ khóa gần giống (từ khóa "giả") nhưng KHÔNG biết mình khác biệt — cứ tưởng mình là dân thường bình thường. Có thể bật gợi ý mơ hồ tùy chọn ở phần thiết lập.',
+      scoring:'Bị vote trúng: Dân Thường và Thám Tử +1 điểm mỗi người. Nếu người khác (Dân Thường/Thám Tử) bị vote nhầm thay: tất cả Kẻ Mạo Danh +1 điểm.'
+    },
+    {
+      icon:'👻', name:'Mr. White', team:'Phe Mạo Danh',
+      info:'Không có từ khóa nào cả (có thể bật gợi ý mơ hồ tùy chọn). Biết rõ mình là Mr. White, phải bịa hoàn toàn để không bị lộ.',
+      scoring:'Không cộng/trừ điểm cho ai khi bị vote trúng (trung lập về điểm số).'
+    },
+    {
+      icon:'🃏', name:'Kẻ Phá Game', team:'Tự Do',
+      info:'Nhận ngẫu nhiên từ khóa Dân Thường HOẶC Kẻ Mạo Danh (50/50). Biết rõ mình là Kẻ Phá Game và có nhiệm vụ cố tình gây nghi ngờ để bị vote trúng.',
+      scoring:'THẮNG NGAY khi bị vote trúng — vòng bỏ phiếu kết thúc lập tức, được cộng +2 điểm.'
+    },
+    {
+      icon:'🔍', name:'Thám Tử', team:'Phe Dân',
+      info:'Không có từ khóa, chỉ có gợi ý. Ngay lúc xem hồ sơ, có thể chọn 2 người bất kỳ để điều tra xem họ có cùng từ khóa hay không (dùng được 1 lần/ván). Nếu cả 2 đều không có từ khóa (Mr. White/Thám Tử khác) thì vẫn tính là trùng.',
+      scoring:'Cùng phe với Dân Thường — cộng/trừ điểm y hệt Dân Thường.'
+    }
+  ];
+
+  function renderRolesGuide(){
+    $('roles-guide-list').innerHTML = ROLE_DEFS.map(r =>
+      '<div class="role-guide-card">' +
+        '<div class="rg-header">' +
+          '<span class="rg-icon">' + r.icon + '</span>' +
+          '<span class="rg-name">' + r.name + '</span>' +
+          '<span class="rg-team">' + r.team + '</span>' +
+        '</div>' +
+        '<div class="rg-info">' + r.info + '</div>' +
+        '<div class="rg-scoring">💰 ' + r.scoring + '</div>' +
+      '</div>'
+    ).join('');
+  }
+
+  $('roles-guide-open').addEventListener('click', () => {
+    renderRolesGuide();
+    $('roles-guide-modal').classList.add('active');
+  });
+  $('roles-guide-close').addEventListener('click', () => $('roles-guide-modal').classList.remove('active'));
+  $('roles-guide-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'roles-guide-modal') $('roles-guide-modal').classList.remove('active');
+  });
+
   const BADGE_DEFS = {
     camouflage: { icon:'🎭', name:'Bậc Thầy Ngụy Trang', desc:'Sống sót ≥3 ván liên tiếp khi đóng vai xấu' },
     hunter:     { icon:'🕵️', name:'Thợ Săn Tinh Anh', desc:'Thắng ≥3 ván liên tiếp khi là Dân Thường' },
@@ -3171,10 +3315,11 @@
       const s = state.stats[i];
       const div = document.createElement('div');
       div.className = 'stats-player';
-      const badgeRow = Object.keys(BADGE_DEFS).map(key => {
+      const badgeKeys = Object.keys(BADGE_DEFS);
+      const badgeRow = badgeKeys.map(key => {
         const def = BADGE_DEFS[key];
         const earned = s.badges.includes(key);
-        return '<div class="badge-chip' + (earned ? ' earned' : '') + '" title="' + def.name + ' — ' + def.desc + '">' +
+        return '<div class="badge-chip' + (earned ? ' earned' : '') + '" data-badge-key="' + key + '">' +
           '<div class="badge-icon">' + (earned ? def.icon : '🔒') + '</div>' + def.name + '</div>';
       }).join('');
       div.innerHTML =
@@ -3184,8 +3329,26 @@
           'Kẻ Mạo Danh/Mr. White: bị bắt ' + s.caughtAsBad + ' · thoát ' + s.escapedAsBad + '<br>' +
           'Dân thường bị lật nhầm: ' + s.wronglyAccused + ' lần' +
         '</div>' +
-        '<div class="badge-row">' + badgeRow + '</div>';
+        '<div class="badge-row">' + badgeRow + '</div>' +
+        '<div class="badge-detail" style="display:none;"></div>';
       wrap.appendChild(div);
+
+      const detailEl = div.querySelector('.badge-detail');
+      div.querySelectorAll('.badge-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const key = chip.dataset.badgeKey;
+          const def = BADGE_DEFS[key];
+          const earned = s.badges.includes(key);
+          const alreadyOpenForThis = detailEl.style.display !== 'none' && detailEl.dataset.key === key;
+          if(alreadyOpenForThis){
+            detailEl.style.display = 'none';
+            return;
+          }
+          detailEl.dataset.key = key;
+          detailEl.innerHTML = '<b>' + def.icon + ' ' + def.name + '</b>' + (earned ? ' — đã đạt ✅' : ' (chưa đạt 🔒)') + '<br>' + def.desc;
+          detailEl.style.display = 'block';
+        });
+      });
     }
   }
 
