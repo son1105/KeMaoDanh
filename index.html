@@ -21,6 +21,7 @@
     --chaos:#b48ee0;
     --detective:#7fc9a0;
     --hunter:#d9824f;
+    --fool:#d97fb0;
     --line: rgba(236,227,204,0.14);
     --shadow: 0 20px 50px rgba(0,0,0,0.55);
   }
@@ -312,6 +313,10 @@
     border:1px solid var(--hunter);
     background:rgba(217,130,79,0.1);
   }
+  .detective-result.peek-result{
+    border:1px solid var(--fool);
+    background:rgba(217,127,176,0.1);
+  }
   .detective-result .dr-title{
     font-family:'Oswald', sans-serif;
     font-size:18px;
@@ -321,6 +326,7 @@
   .detective-result.match .dr-title{ color:var(--detective); }
   .detective-result.nomatch .dr-title{ color:var(--red-bright); }
   .detective-result.trap-set .dr-title{ color:var(--hunter); }
+  .detective-result.peek-result .dr-title{ color:var(--fool); }
   .detective-result .dr-sub{
     font-size:12px;
     color:var(--paper-dim);
@@ -496,8 +502,8 @@
   .stamp-zone.impact.danger::after{ background:rgba(197,39,31,0.32); }
   .stamp-zone.impact.chaos::after{ background:rgba(180,142,224,0.32); }
   .stamp-zone.impact.investig::after{ background:rgba(127,201,160,0.32); }
-  .stamp-zone.impact.trap::after{ background:rgba(212,112,58,0.32); }
   .stamp-zone.impact.hunt::after{ background:rgba(217,130,79,0.32); }
+  .stamp-zone.impact.peek::after{ background:rgba(217,127,176,0.32); }
   @keyframes flashLight{ from{opacity:1;} to{opacity:0;} }
 
   .envelope-flap{
@@ -531,6 +537,12 @@
   .dossier.detective .role-loc{ animation: detectiveGlow 1.6s ease-in-out infinite; color:var(--detective); }
   .dossier.hunter .role-eyebrow{ color:var(--hunter); }
   .dossier.hunter .role-loc{ animation: hunterGlow 1.6s ease-in-out infinite; color:var(--hunter); }
+  .dossier.foolvillager .role-eyebrow{ color:var(--fool); }
+  .dossier.foolvillager .role-loc{ animation: foolGlow 1.6s ease-in-out infinite; color:var(--fool); }
+  @keyframes foolGlow{
+    0%,100%{ text-shadow:0 0 0 rgba(217,127,176,0); }
+    50%{ text-shadow:0 0 18px rgba(217,127,176,0.55); }
+  }
   @keyframes hunterGlow{
     0%,100%{ text-shadow:0 0 0 rgba(217,130,79,0); }
     50%{ text-shadow:0 0 18px rgba(217,130,79,0.55); }
@@ -705,6 +717,7 @@
   .reveal-item.is-saboteur .what{ color:var(--chaos); }
   .reveal-item.is-detective .what{ color:var(--detective); }
   .reveal-item.is-hunter .what{ color:var(--hunter); }
+  .reveal-item.is-foolvillager .what{ color:var(--fool); }
 
   footer{ text-align:center; margin-top:16px; font-size:10.5px; color:var(--amber-dim); letter-spacing:0.15em; text-transform:uppercase; }
 
@@ -878,6 +891,7 @@
   .vote-card.done.is-saboteur{ border-color:var(--chaos); }
   .vote-card.done.is-detective{ border-color:var(--detective); }
   .vote-card.done.is-hunter{ border-color:var(--hunter); }
+  .vote-card.done.is-foolvillager{ border-color:var(--fool); }
   .vote-card .row{
     display:flex; align-items:center; justify-content:space-between;
     padding:13px 14px;
@@ -900,6 +914,7 @@
   .vote-card.done.is-saboteur .status{ color:var(--chaos); }
   .vote-card.done.is-detective .status{ color:var(--detective); }
   .vote-card.done.is-hunter .status{ color:var(--hunter); }
+  .vote-card.done.is-foolvillager .status{ color:var(--fool); }
   .vote-card .flip{ display:none; }
 
   /* ---- Reveal card modal: xoay rồi lật ---- */
@@ -964,6 +979,7 @@
   .reveal-face-result.is-saboteur{ border-color:var(--chaos); }
   .reveal-face-result.is-detective{ border-color:var(--detective); }
   .reveal-face-result.is-hunter{ border-color:var(--hunter); }
+  .reveal-face-result.is-foolvillager{ border-color:var(--fool); }
   .reveal-icon{
     font-size:56px;
     filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5));
@@ -985,6 +1001,7 @@
   .reveal-face-result.is-saboteur .reveal-role-text{ color:var(--chaos); }
   .reveal-face-result.is-detective .reveal-role-text{ color:var(--detective); }
   .reveal-face-result.is-hunter .reveal-role-text{ color:var(--hunter); }
+  .reveal-face-result.is-foolvillager .reveal-role-text{ color:var(--fool); }
 
   .reveal-tap-hint{
     font-family:'Oswald', sans-serif;
@@ -1072,6 +1089,14 @@
             <button id="minus-hunters">−</button>
             <div><span class="value" id="hunters-count">0</span></div>
             <button id="plus-hunters">+</button>
+          </div>
+        </div>
+        <div>
+          <span class="field-label">Dân ngu</span>
+          <div class="stepper stepper-compact">
+            <button id="minus-fools">−</button>
+            <div><span class="value" id="fools-count">0</span></div>
+            <button id="plus-fools">+</button>
           </div>
         </div>
       </div>
@@ -1216,6 +1241,13 @@
       <div class="detective-target-list" id="hunter-target-list"></div>
       <button class="btn" id="hunter-trap-btn" style="margin-top:12px; background:var(--hunter); box-shadow:none; border:1px solid var(--hunter); color:var(--ink);">Gài Bẫy</button>
       <div id="hunter-result" class="detective-result" style="display:none;"></div>
+    </div>
+
+    <div id="fool-peek" style="display:none; margin-top:16px;">
+      <span class="field-label">👀 Chọn 1 người để xem trộm từ khóa/gợi ý</span>
+      <div class="detective-target-list" id="fool-target-list"></div>
+      <button class="btn" id="fool-peek-btn" style="margin-top:12px; background:var(--fool); box-shadow:none; border:1px solid var(--fool); color:var(--ink);">Xem Trộm</button>
+      <div id="fool-result" class="detective-result" style="display:none;"></div>
     </div>
 
     <div class="pass-modal-footer" id="pass-modal-footer">Chạm dấu ✕ hoặc nền tối để đóng lại</div>
@@ -2459,6 +2491,7 @@
   const SABOTEUR_TITLE = "KẺ PHÁ GAME";
   const DETECTIVE_TITLE = "THÁM TỬ";
   const HUNTER_TITLE = "THỢ SĂN";
+  const FOOL_TITLE = "DÂN NGU";
 
   let state = {
     theme: 'all',
@@ -2469,6 +2502,7 @@
     numSaboteur: 0,
     numDetective: 0,
     numHunter: 0,
+    numFool: 0,
     minutes: 8,
     names: [],
     assignments: [],
@@ -2518,9 +2552,10 @@
   }
 
   function clampVillains(){
-    while(state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter > maxVillains()
-      && (state.numSpies > 0 || state.numWhite > 0 || state.numSaboteur > 0 || state.numDetective > 0 || state.numHunter > 0)){
-      if(state.numHunter > 0) state.numHunter--;
+    while(state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool > maxVillains()
+      && (state.numSpies > 0 || state.numWhite > 0 || state.numSaboteur > 0 || state.numDetective > 0 || state.numHunter > 0 || state.numFool > 0)){
+      if(state.numFool > 0) state.numFool--;
+      else if(state.numHunter > 0) state.numHunter--;
       else if(state.numDetective > 0) state.numDetective--;
       else if(state.numSaboteur > 0) state.numSaboteur--;
       else if(state.numWhite > 0) state.numWhite--;
@@ -2535,6 +2570,7 @@
     $('saboteurs-count').textContent = state.numSaboteur;
     $('detectives-count').textContent = state.numDetective;
     $('hunters-count').textContent = state.numHunter;
+    $('fools-count').textContent = state.numFool;
     $('time-value').textContent = state.minutes;
     renderNameInputs();
   }
@@ -2551,6 +2587,8 @@
   $('plus-detectives').onclick = () => { state.numDetective = clamp(state.numDetective+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-hunters').onclick = () => { state.numHunter = clamp(state.numHunter-1,0,maxVillains()); updateSetupUI(); };
   $('plus-hunters').onclick = () => { state.numHunter = clamp(state.numHunter+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
+  $('minus-fools').onclick = () => { state.numFool = clamp(state.numFool-1,0,maxVillains()); updateSetupUI(); };
+  $('plus-fools').onclick = () => { state.numFool = clamp(state.numFool+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-time').onclick = () => { state.minutes = clamp(state.minutes-1,1,20); updateSetupUI(); };
   $('plus-time').onclick = () => { state.minutes = clamp(state.minutes+1,1,20); updateSetupUI(); };
 
@@ -2611,6 +2649,10 @@
       state.numSpies + state.numWhite + state.numSaboteur + state.numDetective,
       state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter
     ));
+    const foolIdx = new Set(order.slice(
+      state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter,
+      state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool
+    ));
 
     state.assignments = [];
     for(let i=0;i<state.numPlayers;i++){
@@ -2625,6 +2667,8 @@
         state.assignments.push({ role:'detective' });
       } else if(hunterIdx.has(i)){
         state.assignments.push({ role:'hunter', word: pair.main });
+      } else if(foolIdx.has(i)){
+        state.assignments.push({ role:'foolvillager' });
       } else {
         state.assignments.push({ role:'villager', word: pair.main });
       }
@@ -2634,6 +2678,8 @@
     state.detectiveSelection = [];
     state.hunterTraps = {};
     state.hunterSelection = null;
+    state.foolPeeks = {};
+    state.foolSelection = null;
     state.currentIndex = 0;
     state.revealed = false;
     state.voteRevealed = new Set();
@@ -2672,7 +2718,7 @@
 
     const dossier = $('dossier');
     const card = $('card-pullout');
-    dossier.classList.remove('spy','saboteur','detective','hunter');
+    dossier.classList.remove('spy','saboteur','detective','hunter','foolvillager');
     card.style.transition = 'none';
     card.style.transform = 'translateY(100%)';
     $('pull-hint').classList.remove('hidden');
@@ -2683,8 +2729,10 @@
     $('pass-modal').classList.remove('active');
     $('detective-investigate').style.display = 'none';
     $('hunter-trap').style.display = 'none';
+    $('fool-peek').style.display = 'none';
     state.detectiveSelection = [];
     state.hunterSelection = null;
+    state.foolSelection = null;
     state.revealed = false;
     state.hasPeeked = false;
     state.pullProgress = 0;
@@ -2712,6 +2760,11 @@
       $('role-loc').textContent = HUNTER_TITLE;
       $('role-title').textContent = 'Từ khóa của bạn: "' + a.word + '". Bạn thuộc phe thứ 3 — ngay bây giờ hãy chọn 1 người bên dưới để gài bẫy. Nếu họ bị vote trúng, bạn thắng ngay và được +3 điểm!';
       dossier.classList.add('hunter');
+    } else if(a.role === 'foolvillager'){
+      $('role-eyebrow').textContent = 'BẠN LÀ';
+      $('role-loc').textContent = FOOL_TITLE;
+      $('role-title').textContent = 'Bạn không có từ khóa nào cả — nhưng ngay bây giờ hãy chọn 1 người bên dưới để xem trộm từ khóa/gợi ý của họ! Ngoài ra, bạn hoàn toàn cùng phe với Dân Thường.';
+      dossier.classList.add('foolvillager');
     } else {
       // villager và spy đều thấy giao diện giống hệt nhau — spy không biết mình khác biệt
       $('role-eyebrow').textContent = 'TỪ KHÓA';
@@ -2759,19 +2812,22 @@
     if(open){
       const zone = $('stamp-zone');
       const role = state.assignments[state.currentIndex].role;
-      zone.classList.remove('impact','danger','chaos','investig','hunt');
+      zone.classList.remove('impact','danger','chaos','investig','hunt','peek');
       void zone.offsetWidth; // restart animation
       zone.classList.add('impact');
       if(role === 'mrwhite') zone.classList.add('danger');
       else if(role === 'saboteur') zone.classList.add('chaos');
       else if(role === 'detective') zone.classList.add('investig');
       else if(role === 'hunter') zone.classList.add('hunt');
+      else if(role === 'foolvillager') zone.classList.add('peek');
 
       renderDetectiveSection();
       renderHunterSection();
+      renderFoolSection();
     } else {
       $('detective-investigate').style.display = 'none';
       $('hunter-trap').style.display = 'none';
+      $('fool-peek').style.display = 'none';
     }
   }
 
@@ -2917,6 +2973,69 @@
     state.hunterTraps[state.currentIndex] = state.hunterSelection;
     state.hunterSelection = null;
     renderHunterSection();
+  };
+
+  function renderFoolSection(){
+    const i = state.currentIndex;
+    const a = state.assignments[i];
+    const box = $('fool-peek');
+    if(a.role !== 'foolvillager'){
+      box.style.display = 'none';
+      return;
+    }
+    box.style.display = 'block';
+
+    const listEl = $('fool-target-list');
+    const btn = $('fool-peek-btn');
+    const resultEl = $('fool-result');
+    const existing = state.foolPeeks[i];
+
+    if(existing){
+      // Đã xem trộm rồi trong ván này -> chỉ hiện lại kết quả cũ
+      listEl.style.display = 'none';
+      btn.style.display = 'none';
+      resultEl.style.display = 'block';
+      resultEl.className = 'detective-result peek-result';
+      resultEl.innerHTML = existing.isHint
+        ? '<div class="dr-title">👀 Gợi Ý Của ' + playerName(existing.target) + '</div><div class="dr-sub">Người này không có từ khóa thật, chỉ có gợi ý: "' + existing.value + '"</div>'
+        : '<div class="dr-title">👀 Từ Khóa Của ' + playerName(existing.target) + '</div><div class="dr-sub">"' + existing.value + '"</div>';
+      return;
+    }
+
+    listEl.style.display = 'flex';
+    btn.style.display = 'block';
+    resultEl.style.display = 'none';
+
+    listEl.innerHTML = '';
+    for(let j=0;j<state.numPlayers;j++){
+      if(j === i) continue; // không tự xem chính mình
+      const checked = state.foolSelection === j;
+      const item = document.createElement('label');
+      item.className = 'detective-target-item' + (checked ? ' checked' : '');
+      item.innerHTML = '<input type="radio" name="fool-target" data-idx="' + j + '"' + (checked ? ' checked' : '') + '> ' + playerName(j);
+      listEl.appendChild(item);
+    }
+
+    listEl.querySelectorAll('input[type=radio]').forEach(rb => {
+      rb.addEventListener('change', (e) => {
+        state.foolSelection = parseInt(e.target.dataset.idx, 10);
+        renderFoolSection();
+      });
+    });
+  }
+
+  $('fool-peek-btn').onclick = () => {
+    if(state.foolSelection == null){
+      alert('Hãy chọn 1 người để xem trộm.');
+      return;
+    }
+    const target = state.foolSelection;
+    const t = state.assignments[target];
+    const isHint = t.word === undefined;
+    const value = isHint ? state.hintText : t.word;
+    state.foolPeeks[state.currentIndex] = { target, value, isHint };
+    state.foolSelection = null;
+    renderFoolSection();
   };
 
   let drag = null;
@@ -3159,7 +3278,7 @@
     }
   }
 
-  const ROLE_ICON = { spy:'🕵️', mrwhite:'👻', saboteur:'🃏', detective:'🔍', hunter:'🏹', villager:'🙂' };
+  const ROLE_ICON = { spy:'🕵️', mrwhite:'👻', saboteur:'🃏', detective:'🔍', hunter:'🏹', foolvillager:'👀', villager:'🙂' };
 
   function renderVoteScreen(){
     const list = $('vote-list');
@@ -3181,6 +3300,7 @@
         + (isOpen && a.role === 'saboteur' ? ' is-saboteur' : '')
         + (isOpen && a.role === 'detective' ? ' is-detective' : '')
         + (isOpen && a.role === 'hunter' ? ' is-hunter' : '')
+        + (isOpen && a.role === 'foolvillager' ? ' is-foolvillager' : '')
         + (locked ? ' locked' : '');
       if(state.voteListEntered){
         cardEl.style.animation = 'none';
@@ -3209,14 +3329,15 @@
     state.pendingRevealIndex = null;
 
     const a = state.assignments[i];
-    const roleText = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : (a.role === 'hunter' ? HUNTER_TITLE : 'DÂN THƯỜNG'))));
+    const roleText = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : (a.role === 'hunter' ? HUNTER_TITLE : (a.role === 'foolvillager' ? FOOL_TITLE : 'DÂN THƯỜNG')))));
     const face = $('reveal-face-result');
-    face.classList.remove('is-spy','is-mrwhite','is-saboteur','is-detective','is-hunter');
+    face.classList.remove('is-spy','is-mrwhite','is-saboteur','is-detective','is-hunter','is-foolvillager');
     if(a.role === 'spy') face.classList.add('is-spy');
     if(a.role === 'mrwhite') face.classList.add('is-mrwhite');
     if(a.role === 'saboteur') face.classList.add('is-saboteur');
     if(a.role === 'detective') face.classList.add('is-detective');
     if(a.role === 'hunter') face.classList.add('is-hunter');
+    if(a.role === 'foolvillager') face.classList.add('is-foolvillager');
 
     $('reveal-icon').textContent = ROLE_ICON[a.role] || ROLE_ICON.villager;
     $('reveal-player-name').textContent = playerName(i);
@@ -3236,15 +3357,16 @@
   }
 
   function applyVoteScoring(revealedRole, i){
-    if(revealedRole === 'villager' || revealedRole === 'detective'){
-      // vote trúng dân thường (hoặc Thám Tử, cùng phe dân) -> đoán sai -> tất cả Kẻ Mạo Danh +1 điểm
+    if(revealedRole === 'villager' || revealedRole === 'detective' || revealedRole === 'foolvillager'){
+      // vote trúng dân thường (hoặc Thám Tử/Dân Ngu, cùng phe dân) -> đoán sai -> tất cả Kẻ Mạo Danh +1 điểm
       for(let j=0;j<state.numPlayers;j++){
         if(state.assignments[j].role === 'spy') state.scores[j] += 1;
       }
     } else if(revealedRole === 'spy'){
-      // vote trúng Kẻ Mạo Danh -> đoán đúng -> tất cả Dân Thường (và Thám Tử, cùng phe) +1 điểm
+      // vote trúng Kẻ Mạo Danh -> đoán đúng -> tất cả Dân Thường (và Thám Tử/Dân Ngu, cùng phe) +1 điểm
       for(let j=0;j<state.numPlayers;j++){
-        if(state.assignments[j].role === 'villager' || state.assignments[j].role === 'detective') state.scores[j] += 1;
+        const r = state.assignments[j].role;
+        if(r === 'villager' || r === 'detective' || r === 'foolvillager') state.scores[j] += 1;
       }
     } else if(revealedRole === 'saboteur'){
       // Kẻ Phá Game thắng ngay khi bị vote trúng
@@ -3335,6 +3457,11 @@
       icon:'🏹', name:'Thợ Săn', team:'Phe Thứ 3',
       info:'Nhận từ khóa chính giống Dân Thường để dễ ẩn mình. Ngay lúc xem hồ sơ, có thể chọn 1 người khác để âm thầm gài bẫy (dùng được 1 lần/ván).',
       scoring:'Nếu người bị gài bẫy sau đó bị vote trúng: Thợ Săn THẮNG NGAY — vòng bỏ phiếu kết thúc lập tức, được cộng +3 điểm. Nếu bẫy không trúng, không cộng/trừ điểm gì thêm.'
+    },
+    {
+      icon:'👀', name:'Dân Ngu', team:'Phe Dân',
+      info:'Không có từ khóa nào cả. Ngay lúc xem hồ sơ, có thể chọn 1 người bất kỳ để xem trộm từ khóa (hoặc gợi ý, nếu người đó cũng không có từ khóa thật) của họ — dùng được 1 lần/ván.',
+      scoring:'Cùng phe với Dân Thường — cộng/trừ điểm y hệt Dân Thường.'
     }
   ];
 
@@ -3439,12 +3566,12 @@
     for(let i=0;i<state.numPlayers;i++){
       const a = state.assignments[i];
       const row = document.createElement('div');
-      const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : (a.role === 'hunter' ? HUNTER_TITLE : 'Dân thường'))));
+      const label = a.role === 'spy' ? SPY_TITLE : (a.role === 'mrwhite' ? WHITE_TITLE : (a.role === 'saboteur' ? SABOTEUR_TITLE : (a.role === 'detective' ? DETECTIVE_TITLE : (a.role === 'hunter' ? HUNTER_TITLE : (a.role === 'foolvillager' ? FOOL_TITLE : 'Dân thường')))));
       const total = state.scores ? state.scores[i] : 0;
       const startScore = state.roundStartScores ? state.roundStartScores[i] : 0;
       const gained = total - startScore;
       const gainedText = gained > 0 ? ' <span class="round-gain">(+' + gained + ' ván này)</span>' : '';
-      row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '') + (a.role === 'saboteur' ? ' is-saboteur' : '') + (a.role === 'detective' ? ' is-detective' : '') + (a.role === 'hunter' ? ' is-hunter' : '');
+      row.className = 'reveal-item' + (a.role === 'spy' ? ' is-spy' : '') + (a.role === 'mrwhite' ? ' is-mrwhite' : '') + (a.role === 'saboteur' ? ' is-saboteur' : '') + (a.role === 'detective' ? ' is-detective' : '') + (a.role === 'hunter' ? ' is-hunter' : '') + (a.role === 'foolvillager' ? ' is-foolvillager' : '');
       row.innerHTML = '<span class="who">' + playerName(i) + '</span><span class="what">' + label + ' · ' + total + ' điểm' + gainedText + '</span>';
       list.appendChild(row);
     }
