@@ -2551,6 +2551,17 @@
     return Math.max(0, state.numPlayers - 1);
   }
 
+  function maxSpiesAllowed(){
+    // số Dân Thường (còn lại sau khi trừ hết vai trò đặc biệt khác) phải nhiều hơn số Kẻ Mạo Danh ít nhất 1 người
+    const others = state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool;
+    return Math.max(0, Math.floor((state.numPlayers - others - 1) / 2));
+  }
+
+  function clampSpyRule(){
+    const max = maxSpiesAllowed();
+    if(state.numSpies > max) state.numSpies = max;
+  }
+
   function clampVillains(){
     while(state.numSpies + state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool > maxVillains()
       && (state.numSpies > 0 || state.numWhite > 0 || state.numSaboteur > 0 || state.numDetective > 0 || state.numHunter > 0 || state.numFool > 0)){
@@ -2561,6 +2572,7 @@
       else if(state.numWhite > 0) state.numWhite--;
       else if(state.numSpies > 0) state.numSpies--;
     }
+    clampSpyRule();
   }
 
   function updateSetupUI(){
@@ -2577,8 +2589,8 @@
 
   $('minus-players').onclick = () => { state.numPlayers = clamp(state.numPlayers-1,3,10); clampVillains(); updateSetupUI(); };
   $('plus-players').onclick = () => { state.numPlayers = clamp(state.numPlayers+1,3,10); updateSetupUI(); };
-  $('minus-spies').onclick = () => { state.numSpies = clamp(state.numSpies-1,0,maxVillains()); updateSetupUI(); };
-  $('plus-spies').onclick = () => { state.numSpies = clamp(state.numSpies+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
+  $('minus-spies').onclick = () => { state.numSpies = clamp(state.numSpies-1,0,maxSpiesAllowed()); updateSetupUI(); };
+  $('plus-spies').onclick = () => { state.numSpies = clamp(state.numSpies+1,0,maxSpiesAllowed()); clampVillains(); updateSetupUI(); };
   $('minus-whites').onclick = () => { state.numWhite = clamp(state.numWhite-1,0,maxVillains()); updateSetupUI(); };
   $('plus-whites').onclick = () => { state.numWhite = clamp(state.numWhite+1,0,maxVillains()); clampVillains(); updateSetupUI(); };
   $('minus-saboteurs').onclick = () => { state.numSaboteur = clamp(state.numSaboteur-1,0,maxVillains()); updateSetupUI(); };
@@ -2629,6 +2641,12 @@
   $('start-btn').onclick = () => {
     if(state.numSpies + state.numWhite + state.numSaboteur < 1){
       alert('Cần ít nhất 1 Kẻ Mạo Danh, Mr. White, hoặc Kẻ Phá Game để bắt đầu ván chơi.');
+      return;
+    }
+    const otherRoles = state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool;
+    const villagersCount = state.numPlayers - state.numSpies - otherRoles;
+    if(villagersCount <= state.numSpies){
+      alert('Số Dân Thường phải nhiều hơn số Kẻ Mạo Danh ít nhất 1 người. Hãy giảm Kẻ Mạo Danh hoặc các vai trò đặc biệt khác, hoặc tăng số người chơi.');
       return;
     }
     const pool = state.theme === 'all' ? WORD_PAIRS : WORD_PAIRS.filter(p => p.cat === state.theme);
