@@ -1050,15 +1050,26 @@
         <button id="plus-players">+</button>
       </div>
 
-      <div class="stepper-row stepper-row-compact">
+      <span class="field-label">Kẻ mạo danh</span>
+      <div class="stepper">
+        <button id="minus-spies">−</button>
+        <div><span class="value" id="spies-count">1</span> <span class="stepper-label">người</span></div>
+        <button id="plus-spies">+</button>
+      </div>
+
+      <div id="random-roles-row" class="toggle-row" style="margin-top:14px;">
+        <button class="toggle-switch" id="random-roles-toggle" aria-pressed="false"><span class="toggle-knob"></span></button>
         <div>
-          <span class="field-label">Kẻ mạo danh</span>
-          <div class="stepper stepper-compact">
-            <button id="minus-spies">−</button>
-            <div><span class="value" id="spies-count">1</span></div>
-            <button id="plus-spies">+</button>
-          </div>
+          <div class="toggle-title">Chế độ vai trò ngẫu nhiên</div>
+          <div class="toggle-caption" id="random-roles-caption">Tắt — chọn thủ công số lượng từng vai trò đặc biệt bên dưới</div>
         </div>
+      </div>
+
+      <div class="hint" id="random-roles-note" style="display:none; margin-top:10px; border-top:none; padding-top:0;">
+        Mỗi ván sẽ tự ngẫu nhiên thêm tối đa 1 người cho mỗi vai trò: Mr. White, Kẻ Phá Game, Thám Tử, Thợ Săn, Dân Ngu (nếu đủ chỗ và vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh).
+      </div>
+
+      <div class="stepper-row stepper-row-compact" id="special-roles-grid" style="margin-top:14px;">
         <div>
           <span class="field-label">Mr. White</span>
           <div class="stepper stepper-compact">
@@ -2503,6 +2514,7 @@
     numDetective: 0,
     numHunter: 0,
     numFool: 0,
+    randomRolesMode: false,
     minutes: 8,
     names: [],
     assignments: [],
@@ -2628,6 +2640,16 @@
       : 'Tắt — Mr. White hoàn toàn không biết gì';
   };
 
+  $('random-roles-toggle').onclick = () => {
+    state.randomRolesMode = !state.randomRolesMode;
+    $('random-roles-toggle').setAttribute('aria-pressed', state.randomRolesMode ? 'true' : 'false');
+    $('random-roles-caption').textContent = state.randomRolesMode
+      ? 'Bật — vai trò đặc biệt sẽ được random mỗi ván'
+      : 'Tắt — chọn thủ công số lượng từng vai trò đặc biệt bên dưới';
+    $('random-roles-note').style.display = state.randomRolesMode ? 'block' : 'none';
+    $('special-roles-grid').style.display = state.randomRolesMode ? 'none' : 'grid';
+  };
+
   // ---------- Start game: assign roles ----------
   function shuffle(arr){
     const a = arr.slice();
@@ -2638,7 +2660,28 @@
     return a;
   }
 
+  function randomizeSpecialRoles(){
+    // Random hóa các vai trò đặc biệt (ngoài Dân Thường/Kẻ Mạo Danh), tối đa 1 mỗi loại,
+    // vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh ít nhất 1 người.
+    const budget = Math.max(0, state.numPlayers - 2 * state.numSpies - 1);
+    const roleKeys = ['numWhite', 'numSaboteur', 'numDetective', 'numHunter', 'numFool'];
+    roleKeys.forEach(k => { state[k] = 0; });
+    const shuffledKeys = shuffle(roleKeys.slice());
+    let remaining = budget;
+    for(const k of shuffledKeys){
+      if(remaining <= 0) break;
+      if(Math.random() < 0.5){
+        state[k] = 1;
+        remaining--;
+      }
+    }
+  }
+
   $('start-btn').onclick = () => {
+    if(state.randomRolesMode){
+      randomizeSpecialRoles();
+      updateSetupUI();
+    }
     if(state.numSpies + state.numWhite + state.numSaboteur < 1){
       alert('Cần ít nhất 1 Kẻ Mạo Danh, Mr. White, hoặc Kẻ Phá Game để bắt đầu ván chơi.');
       return;
