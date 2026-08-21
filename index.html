@@ -1066,7 +1066,12 @@
       </div>
 
       <div class="hint" id="random-roles-note" style="display:none; margin-top:10px; border-top:none; padding-top:0;">
-        Mỗi ván sẽ tự ngẫu nhiên thêm tối đa 1 người cho mỗi vai trò: Mr. White, Kẻ Phá Game, Thám Tử, Thợ Săn, Dân Ngu (nếu đủ chỗ và vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh).
+        Mỗi ván sẽ tự ngẫu nhiên thêm tối đa 1 người cho các vai trò được chọn bên dưới (nếu đủ chỗ và vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh).
+      </div>
+
+      <div id="random-roles-options" style="display:none; margin-top:10px;">
+        <span class="field-label">Vai trò có thể xuất hiện ngẫu nhiên</span>
+        <div class="detective-target-list" id="random-roles-checklist"></div>
       </div>
 
       <div class="stepper-row stepper-row-compact" id="special-roles-grid" style="margin-top:14px;">
@@ -2515,6 +2520,7 @@
     numHunter: 0,
     numFool: 0,
     randomRolesMode: false,
+    randomEligible: { numWhite: true, numSaboteur: true, numDetective: true, numHunter: true, numFool: true },
     minutes: 8,
     names: [],
     assignments: [],
@@ -2640,6 +2646,33 @@
       : 'Tắt — Mr. White hoàn toàn không biết gì';
   };
 
+  const RANDOM_ROLE_LABELS = {
+    numWhite: 'Mr. White',
+    numSaboteur: 'Kẻ phá game',
+    numDetective: 'Thám tử',
+    numHunter: 'Thợ săn',
+    numFool: 'Dân ngu'
+  };
+
+  function renderRandomRolesChecklist(){
+    const wrap = $('random-roles-checklist');
+    wrap.innerHTML = '';
+    Object.keys(RANDOM_ROLE_LABELS).forEach(key => {
+      const checked = state.randomEligible[key];
+      const item = document.createElement('label');
+      item.className = 'detective-target-item' + (checked ? ' checked' : '');
+      item.innerHTML = '<input type="checkbox" data-key="' + key + '"' + (checked ? ' checked' : '') + '> ' + RANDOM_ROLE_LABELS[key];
+      wrap.appendChild(item);
+    });
+    wrap.querySelectorAll('input[type=checkbox]').forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        state.randomEligible[e.target.dataset.key] = e.target.checked;
+        renderRandomRolesChecklist();
+      });
+    });
+  }
+  renderRandomRolesChecklist();
+
   $('random-roles-toggle').onclick = () => {
     state.randomRolesMode = !state.randomRolesMode;
     $('random-roles-toggle').setAttribute('aria-pressed', state.randomRolesMode ? 'true' : 'false');
@@ -2647,6 +2680,7 @@
       ? 'Bật — vai trò đặc biệt sẽ được random mỗi ván'
       : 'Tắt — chọn thủ công số lượng từng vai trò đặc biệt bên dưới';
     $('random-roles-note').style.display = state.randomRolesMode ? 'block' : 'none';
+    $('random-roles-options').style.display = state.randomRolesMode ? 'block' : 'none';
     $('special-roles-grid').style.display = state.randomRolesMode ? 'none' : 'grid';
   };
 
@@ -2661,12 +2695,13 @@
   }
 
   function randomizeSpecialRoles(){
-    // Random hóa các vai trò đặc biệt (ngoài Dân Thường/Kẻ Mạo Danh), tối đa 1 mỗi loại,
-    // vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh ít nhất 1 người.
+    // Random hóa các vai trò đặc biệt (ngoài Dân Thường/Kẻ Mạo Danh) trong số các vai trò được phép,
+    // tối đa 1 mỗi loại, vẫn đảm bảo Dân Thường nhiều hơn Kẻ Mạo Danh ít nhất 1 người.
     const budget = Math.max(0, state.numPlayers - 2 * state.numSpies - 1);
-    const roleKeys = ['numWhite', 'numSaboteur', 'numDetective', 'numHunter', 'numFool'];
-    roleKeys.forEach(k => { state[k] = 0; });
-    const shuffledKeys = shuffle(roleKeys.slice());
+    const allKeys = ['numWhite', 'numSaboteur', 'numDetective', 'numHunter', 'numFool'];
+    allKeys.forEach(k => { state[k] = 0; });
+    const eligibleKeys = allKeys.filter(k => state.randomEligible[k]);
+    const shuffledKeys = shuffle(eligibleKeys.slice());
     let remaining = budget;
     for(const k of shuffledKeys){
       if(remaining <= 0) break;
