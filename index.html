@@ -706,6 +706,19 @@
   }
   .name-inputs input:focus{ outline:1px solid var(--amber); border-color:var(--amber); }
 
+  .mrwhite-guess-input{
+    width:100%;
+    background:var(--charcoal);
+    border:1px solid var(--ghost);
+    color:var(--paper);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    padding:12px 14px;
+    border-radius:3px;
+    margin-top:6px;
+  }
+  .mrwhite-guess-input:focus{ outline:1px solid var(--ghost); }
+
   .reveal-item{
     display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px;
   }
@@ -817,6 +830,10 @@
     border-color:var(--hunter);
     background:rgba(217,130,79,0.1);
   }
+  .vote-end-banner.mrwhite-win{
+    border-color:var(--ghost);
+    background:rgba(143,179,199,0.1);
+  }
   .vote-end-banner .banner-title{
     font-family:'Oswald', sans-serif;
     font-size:16px;
@@ -828,6 +845,7 @@
   .vote-end-banner.spies-win .banner-title{ color:var(--red-bright); }
   .vote-end-banner.saboteur-win .banner-title{ color:var(--chaos); }
   .vote-end-banner.hunter-win .banner-title{ color:var(--hunter); }
+  .vote-end-banner.mrwhite-win .banner-title{ color:var(--ghost); }
   .vote-end-banner .banner-sub{
     font-size:12.5px;
     color:var(--paper-dim);
@@ -1298,6 +1316,19 @@
       Tích lũy qua các ván chơi cùng nhóm này. Bấm "Ván Mới" để làm lại từ đầu.
     </div>
     <div id="stats-list"></div>
+  </div>
+</div>
+
+<div class="stats-modal" id="mrwhite-guess-modal">
+  <div class="pass-modal-panel stats-panel">
+    <div class="pass-modal-name" style="color:var(--ghost);">👻 Mr. White Bị Lộ!</div>
+    <div class="hint" style="margin-top:0; border-top:none; padding-top:0;">
+      Cơ hội cuối cùng! Nếu đoán đúng từ khóa của Dân Thường, Mr. White THẮNG NGAY và được +2 điểm.
+    </div>
+    <input type="text" class="mrwhite-guess-input" id="mrwhite-guess-input" placeholder="Nhập từ khóa bạn đoán...">
+    <button class="btn" id="mrwhite-guess-btn" style="margin-top:14px; background:var(--ghost); box-shadow:none; border:1px solid var(--ghost); color:var(--ink);">Xác Nhận Đoán</button>
+    <div id="mrwhite-guess-result" class="detective-result" style="display:none;"></div>
+    <button class="btn secondary small" id="mrwhite-guess-continue" style="margin-top:12px; display:none;">Tiếp Tục</button>
   </div>
 </div>
 
@@ -3362,6 +3393,7 @@
     if(state.voteOutcome === 'spies') cls += ' spies-win';
     else if(state.voteOutcome === 'saboteur') cls += ' saboteur-win';
     else if(state.voteOutcome === 'hunter') cls += ' hunter-win';
+    else if(state.voteOutcome === 'mrwhite') cls += ' mrwhite-win';
     banner.className = cls;
     if(state.voteOutcome === 'villagers'){
       banner.innerHTML = '<div class="banner-title">🎉 Dân Thường Thắng!</div><div class="banner-sub">Đã tìm ra hết Kẻ Mạo Danh. Vòng bỏ phiếu kết thúc.</div>';
@@ -3369,6 +3401,8 @@
       banner.innerHTML = '<div class="banner-title">🕵️ Kẻ Mạo Danh Thắng!</div><div class="banner-sub">Số Kẻ Mạo Danh còn lại đã bằng số người còn lại không phải Kẻ Mạo Danh. Vòng bỏ phiếu kết thúc.</div>';
     } else if(state.voteOutcome === 'saboteur'){
       banner.innerHTML = '<div class="banner-title">🃏 Kẻ Phá Game Thắng!</div><div class="banner-sub">' + playerName(state.saboteurWinnerIndex) + ' đã cố tình để bị lộ và phá vỡ ván chơi!</div>';
+    } else if(state.voteOutcome === 'mrwhite'){
+      banner.innerHTML = '<div class="banner-title">👻 Mr. White Thắng!</div><div class="banner-sub">' + playerName(state.mrwhiteWinnerIndex) + ' đã đoán đúng từ khóa "' + state.location + '"!</div>';
     } else {
       banner.innerHTML = '<div class="banner-title">🏹 Thợ Săn Thắng!</div><div class="banner-sub">' + playerName(state.hunterWinnerIndex) + ' đã gài bẫy trúng ' + playerName(state.hunterTargetIndex) + '!</div>';
     }
@@ -3479,14 +3513,7 @@
     return null;
   }
 
-  function closeRevealModal(){
-    if(state.pendingRevealIndex == null) return; // vẫn đang xoay, chưa cho đóng
-    const i = state.pendingRevealIndex;
-    $('reveal-modal').classList.remove('active');
-    state.voteRevealed.add(i);
-    const role = state.assignments[i].role;
-    applyVoteScoring(role, i);
-
+  function finalizeRevealOutcome(i, role){
     const trapHunter = findHunterTrapFor(i);
 
     if(role === 'saboteur'){
@@ -3511,9 +3538,76 @@
       }
     }
 
+    renderVoteScreen();
+  }
+
+  function normalizeGuess(s){
+    return (s || '').trim().toLowerCase().normalize('NFC');
+  }
+
+  function openMrWhiteGuessModal(i){
+    state.mrwhiteGuessIndex = i;
+    $('mrwhite-guess-input').value = '';
+    $('mrwhite-guess-input').style.display = 'block';
+    $('mrwhite-guess-btn').style.display = 'block';
+    $('mrwhite-guess-result').style.display = 'none';
+    $('mrwhite-guess-continue').style.display = 'none';
+    $('mrwhite-guess-modal').classList.add('active');
+    setTimeout(() => $('mrwhite-guess-input').focus(), 300);
+  }
+
+  $('mrwhite-guess-btn').onclick = () => {
+    const i = state.mrwhiteGuessIndex;
+    const guess = $('mrwhite-guess-input').value;
+    const correct = guess.trim().length > 0 && normalizeGuess(guess) === normalizeGuess(state.location);
+
+    $('mrwhite-guess-input').style.display = 'none';
+    $('mrwhite-guess-btn').style.display = 'none';
+    const resultEl = $('mrwhite-guess-result');
+    resultEl.style.display = 'block';
+
+    if(correct){
+      state.scores[i] += 2;
+      state.voteEnded = true;
+      state.voteOutcome = 'mrwhite';
+      state.mrwhiteWinnerIndex = i;
+      resultEl.className = 'detective-result match';
+      resultEl.innerHTML = '<div class="dr-title">🎉 ĐOÁN ĐÚNG!</div><div class="dr-sub">' + playerName(i) + ' (Mr. White) đoán đúng từ khóa "' + state.location + '" — THẮNG NGAY, +2 điểm!</div>';
+    } else {
+      resultEl.className = 'detective-result nomatch';
+      resultEl.innerHTML = '<div class="dr-title">❌ ĐOÁN SAI</div><div class="dr-sub">' + playerName(i) + ' (Mr. White) đã bị loại. Vòng bỏ phiếu tiếp tục.</div>';
+    }
+    $('mrwhite-guess-continue').style.display = 'block';
+  };
+
+  $('mrwhite-guess-continue').onclick = () => {
+    const i = state.mrwhiteGuessIndex;
+    const won = state.voteOutcome === 'mrwhite';
+    $('mrwhite-guess-modal').classList.remove('active');
+    if(won){
+      renderVoteScreen();
+    } else {
+      finalizeRevealOutcome(i, 'mrwhite');
+    }
+  };
+
+  function closeRevealModal(){
+    if(state.pendingRevealIndex == null) return; // vẫn đang xoay, chưa cho đóng
+    const i = state.pendingRevealIndex;
+    $('reveal-modal').classList.remove('active');
+    state.voteRevealed.add(i);
+    const role = state.assignments[i].role;
+    applyVoteScoring(role, i);
+
     state.modalBusy = false;
     state.pendingRevealIndex = null;
-    renderVoteScreen();
+
+    if(role === 'mrwhite'){
+      openMrWhiteGuessModal(i);
+      return; // chờ Mr. White đoán từ khóa trước khi tính tiếp
+    }
+
+    finalizeRevealOutcome(i, role);
   }
 
   $('reveal-modal').addEventListener('click', closeRevealModal);
@@ -3537,7 +3631,7 @@
     {
       icon:'👻', name:'Mr. White', team:'Phe Mạo Danh',
       info:'Không có từ khóa nào cả (có thể bật gợi ý mơ hồ tùy chọn). Biết rõ mình là Mr. White, phải bịa hoàn toàn để không bị lộ.',
-      scoring:'Không cộng/trừ điểm cho ai khi bị vote trúng (trung lập về điểm số).'
+      scoring:'Khi bị vote trúng, sẽ có popup cho đoán từ khóa của Dân Thường. Đoán ĐÚNG: THẮNG NGAY, +2 điểm, vòng bỏ phiếu kết thúc. Đoán SAI: bị loại, không cộng/trừ điểm, vòng bỏ phiếu tiếp tục bình thường.'
     },
     {
       icon:'🃏', name:'Kẻ Phá Game', team:'Tự Do',
