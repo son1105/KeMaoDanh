@@ -186,6 +186,14 @@
   /* ---- Pass screen ---- */
   .pass-screen{ text-align:center; }
 
+  .pass-utility-row{
+    display:flex; gap:8px;
+    margin-top:18px;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+  .pass-utility-row .btn{ margin-top:0; flex:1; }
+
   .envelope-trigger{
     width:100%;
     padding:36px 20px;
@@ -1172,6 +1180,11 @@
       <div class="hint" id="pass-hint">Đưa máy cho người chơi này, rồi chạm vào phong bì để mở và kéo lên xem hồ sơ mật.</div>
       <button class="btn" id="next-player-btn" style="margin-top:16px; display:none;">Người Tiếp Theo →</button>
       <button class="btn secondary small" id="prev-player-btn" style="margin-top:10px; display:none;">◀ Quay Lại Người Trước (nếu quên)</button>
+
+      <div class="pass-utility-row">
+        <button class="btn secondary small" id="reroll-keyword-btn">🔄 Đổi Từ Khóa</button>
+        <button class="btn secondary small" id="back-to-setup-btn">🏠 Về Màn Hình Chính</button>
+      </div>
     </div>
   </div>
 
@@ -1329,6 +1342,17 @@
     <button class="btn" id="mrwhite-guess-btn" style="margin-top:14px; background:var(--ghost); box-shadow:none; border:1px solid var(--ghost); color:var(--ink);">Xác Nhận Đoán</button>
     <div id="mrwhite-guess-result" class="detective-result" style="display:none;"></div>
     <button class="btn secondary small" id="mrwhite-guess-continue" style="margin-top:12px; display:none;">Tiếp Tục</button>
+  </div>
+</div>
+
+<div class="stats-modal" id="confirm-modal">
+  <div class="pass-modal-panel">
+    <div class="pass-modal-name" id="confirm-modal-title">Xác Nhận</div>
+    <div class="hint" id="confirm-modal-message" style="margin-top:0; border-top:none; padding-top:0;"></div>
+    <div style="display:flex; gap:10px; margin-top:16px;">
+      <button class="btn secondary small" id="confirm-modal-cancel" style="flex:1; margin-top:0;">Hủy</button>
+      <button class="btn small" id="confirm-modal-ok" style="flex:1; margin-top:0;">Xác Nhận</button>
+    </div>
   </div>
 </div>
 
@@ -2749,13 +2773,13 @@
       updateSetupUI();
     }
     if(state.numSpies + state.numWhite + state.numSaboteur < 1){
-      alert('Cần ít nhất 1 Kẻ Mạo Danh, Mr. White, hoặc Kẻ Phá Game để bắt đầu ván chơi.');
+      showAlert('Cần ít nhất 1 Kẻ Mạo Danh, Mr. White, hoặc Kẻ Phá Game để bắt đầu ván chơi.');
       return;
     }
     const otherRoles = state.numWhite + state.numSaboteur + state.numDetective + state.numHunter + state.numFool;
     const villagersCount = state.numPlayers - state.numSpies - otherRoles;
     if(villagersCount <= state.numSpies){
-      alert('Số Dân Thường phải nhiều hơn số Kẻ Mạo Danh ít nhất 1 người. Hãy giảm Kẻ Mạo Danh hoặc các vai trò đặc biệt khác, hoặc tăng số người chơi.');
+      showAlert('Số Dân Thường phải nhiều hơn số Kẻ Mạo Danh ít nhất 1 người. Hãy giảm Kẻ Mạo Danh hoặc các vai trò đặc biệt khác, hoặc tăng số người chơi.');
       return;
     }
     const pool = state.theme === 'all' ? WORD_PAIRS : WORD_PAIRS.filter(p => p.cat === state.theme);
@@ -3034,7 +3058,7 @@
 
   $('detective-investigate-btn').onclick = () => {
     if(state.detectiveSelection.length !== 2){
-      alert('Hãy chọn đúng 2 người để điều tra.');
+      showAlert('Hãy chọn đúng 2 người để điều tra.');
       return;
     }
     const [a, b] = state.detectiveSelection;
@@ -3094,7 +3118,7 @@
 
   $('hunter-trap-btn').onclick = () => {
     if(state.hunterSelection == null){
-      alert('Hãy chọn 1 người để gài bẫy.');
+      showAlert('Hãy chọn 1 người để gài bẫy.');
       return;
     }
     state.hunterTraps[state.currentIndex] = state.hunterSelection;
@@ -3153,7 +3177,7 @@
 
   $('fool-peek-btn').onclick = () => {
     if(state.foolSelection == null){
-      alert('Hãy chọn 1 người để xem trộm.');
+      showAlert('Hãy chọn 1 người để xem trộm.');
       return;
     }
     const target = state.foolSelection;
@@ -3229,6 +3253,77 @@
       state.currentIndex--;
       renderPassScreen();
     }
+  };
+
+  function rerollKeyword(){
+    const pool = state.theme === 'all' ? WORD_PAIRS : WORD_PAIRS.filter(p => p.cat === state.theme);
+    const pair = pool[Math.floor(Math.random()*pool.length)];
+    state.location = pair.main;
+    state.decoyWord = pair.decoy;
+    state.hintText = pair.hint;
+
+    state.assignments.forEach(a => {
+      if(a.role === 'villager' || a.role === 'hunter'){
+        a.word = pair.main;
+      } else if(a.role === 'spy'){
+        a.word = pair.decoy;
+      } else if(a.role === 'saboteur'){
+        a.word = Math.random() < 0.5 ? pair.main : pair.decoy;
+      }
+      // mrwhite/detective/foolvillager: không có từ khóa, không cần đổi
+    });
+
+    state.currentIndex = 0;
+    state.detectiveResults = {};
+    state.detectiveSelection = [];
+    state.hunterTraps = {};
+    state.hunterSelection = null;
+    state.foolPeeks = {};
+    state.foolSelection = null;
+
+    renderPassScreen();
+  }
+
+  // ---------- Modal xác nhận dùng chung (thay cho confirm()/alert() gốc, hay bị chặn trong iframe) ----------
+  let confirmCallback = null;
+  function showConfirm(message, onConfirm){
+    $('confirm-modal-message').textContent = message;
+    confirmCallback = onConfirm;
+    $('confirm-modal-cancel').style.display = 'block';
+    $('confirm-modal').classList.add('active');
+  }
+  function showAlert(message){
+    $('confirm-modal-message').textContent = message;
+    confirmCallback = null;
+    $('confirm-modal-cancel').style.display = 'none';
+    $('confirm-modal').classList.add('active');
+  }
+  $('confirm-modal-ok').onclick = () => {
+    $('confirm-modal').classList.remove('active');
+    $('confirm-modal-cancel').style.display = 'block';
+    const cb = confirmCallback;
+    confirmCallback = null;
+    if(cb) cb();
+  };
+  $('confirm-modal-cancel').onclick = () => {
+    $('confirm-modal').classList.remove('active');
+    confirmCallback = null;
+  };
+  $('confirm-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'confirm-modal'){
+      $('confirm-modal').classList.remove('active');
+      confirmCallback = null;
+    }
+  });
+
+  $('reroll-keyword-btn').onclick = (e) => {
+    e.stopPropagation();
+    showConfirm('Đổi sang từ khóa mới? Mọi người sẽ cần xem lại hồ sơ từ đầu (Người chơi 1), vai trò giữ nguyên như cũ.', rerollKeyword);
+  };
+
+  $('back-to-setup-btn').onclick = (e) => {
+    e.stopPropagation();
+    showConfirm('Quay về màn hình chính? Ván chơi hiện tại sẽ bị hủy (tên và cấu hình vẫn được giữ nguyên).', () => showScreen('setup'));
   };
 
   // ---------- Timer screen ----------
@@ -3829,7 +3924,6 @@
   });
 
   $('restart-btn').onclick = () => {
-    state.names = [];
     state.scores = null;
     state.stats = null;
     $('stats-open-setup').style.display = 'none';
